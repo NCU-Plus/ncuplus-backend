@@ -28,6 +28,9 @@ jobs:
   lint:
     name: "Run linters"
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16]
 
     steps:
     - uses: actions/checkout@v2
