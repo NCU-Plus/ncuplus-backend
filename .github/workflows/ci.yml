@@ -25,24 +25,5 @@ jobs:
       run: npm install
     - name: Run unit tests
       run: npm run test 
-#   lint:
-#     name: "Run linters"
-#     runs-on: ubuntu-latest
-#     strategy:
-#       matrix:
-#         node-version: [16]
-
-#     steps:
-#     - uses: actions/checkout@v2
-#     - name: Set node version to ${{ matrix.node-version }}
-#       uses: actions/setup-node@v2
-#       with:
-#         node-version: ${{ matrix.node-version }}
-#         cache: 'npm'
-#     - name: Install deps
-#       run: npm install
-#     - name: Run linters
-#       uses: wearerequired/lint-action@v1
-#       with:
-#         eslint: true
-#         prettier: true
+    - name: Run linter
+      run: npm run lint
