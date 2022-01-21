@@ -16,6 +16,25 @@ export class CourseService {
     private courseRepository: Repository<Course>,
   ) {}
   async getCourses(): Promise<Course[]> {
-    return await this.courseRepository.find();
+    return await this.courseRepository.find({
+      select: [
+        'id',
+        'year',
+        'semester',
+        'serialNo',
+        'classNo',
+        'title',
+        'credit',
+        'passwordCard',
+        'teachers',
+        'classTimes',
+        'limitCnt',
+        'admitCnt',
+        'waitCnt',
+        'collegeId',
+        'departmentId',
+        'courseType',
+      ],
+    });
   }
 }
