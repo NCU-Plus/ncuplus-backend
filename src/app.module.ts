@@ -6,9 +6,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { configuration } from './config/configuration';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { Course } from './course/course.entity';
-import { College } from './course/college.entity';
+import { College } from './college/college.entity';
 import { Department } from './department/department.entity';
 import { DepartmentModule } from './department/department.module';
+import { CollegeModule } from './college/college.module';
 
 @Module({
   imports: [
@@ -35,8 +36,9 @@ import { DepartmentModule } from './department/department.module';
         } as TypeOrmModuleOptions),
       inject: [ConfigService],
     }),
-    CourseModule,
+    CollegeModule,
     DepartmentModule,
+    CourseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
