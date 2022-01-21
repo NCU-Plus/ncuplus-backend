@@ -15,4 +15,7 @@ export class CourseService {
     @InjectRepository(Course, 'coursesConnection')
     private courseRepository: Repository<Course>,
   ) {}
+  async getCourses(): Promise<Course[]> {
+    return await this.courseRepository.find();
+  }
 }
