@@ -1,4 +1,4 @@
-import { Controller, Get, Header, Param } from '@nestjs/common';
+import { Controller, Get, Header, Param, ParseIntPipe } from '@nestjs/common';
 import { CourseService } from './course.service';
 
 @Controller('courses')
@@ -15,7 +15,7 @@ export class CourseController {
   }
   @Get(':id')
   @Header('Access-Control-Allow-Origin', '*')
-  async getCourse(@Param('id') id: number) {
+  async getCourse(@Param('id', ParseIntPipe) id: number) {
     return {
       statusCode: 200,
       message: 'OK',
