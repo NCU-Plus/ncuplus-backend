@@ -30,4 +30,26 @@ export class CourseService {
       ],
     });
   }
+  async getCourse(id: number): Promise<Course> {
+    return await this.courseRepository.findOne(id, {
+      select: [
+        'id',
+        'year',
+        'semester',
+        'serialNo',
+        'classNo',
+        'title',
+        'credit',
+        'passwordCard',
+        'teachers',
+        'classTimes',
+        'limitCnt',
+        'admitCnt',
+        'waitCnt',
+        'collegeId',
+        'departmentId',
+        'courseType',
+      ],
+    });
+  }
 }
