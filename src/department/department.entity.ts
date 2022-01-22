@@ -14,7 +14,7 @@ export class Department {
   @Column()
   departmentName: string;
 
-  @PrimaryColumn()
+  @Column()
   collegeId: string;
 
   @CreateDateColumn()
