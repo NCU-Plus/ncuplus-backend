@@ -53,10 +53,10 @@ export class Course {
   @Column()
   waitCnt: number;
 
-  @PrimaryColumn()
+  @Column()
   collegeId: string;
 
-  @PrimaryColumn()
+  @Column()
   departmentId: string;
 
   @Column({ nullable: true })
