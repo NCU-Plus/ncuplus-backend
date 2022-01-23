@@ -13,6 +13,10 @@ import { CollegeModule } from './college/college.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { User } from './user/user.entity';
+import { CourseInfoModule } from './course-info/course-info.module';
+import { CourseInfo } from './course-info/course-info.entity';
+import { Review } from './course-info/review.entity';
+import { Comment } from './course-info/comment.entity';
 
 @Module({
   imports: [
@@ -25,7 +29,7 @@ import { User } from './user/user.entity';
         ({
           ...config.get('db'),
           database: 'ncuplus',
-          entities: [User],
+          entities: [User, CourseInfo, Review, Comment],
         } as TypeOrmModuleOptions),
       inject: [ConfigService],
     }),
@@ -44,6 +48,7 @@ import { User } from './user/user.entity';
     CourseModule,
     AuthModule,
     UserModule,
+    CourseInfoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
