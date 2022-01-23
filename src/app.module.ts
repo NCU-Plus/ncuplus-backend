@@ -10,6 +10,9 @@ import { College } from './college/college.entity';
 import { Department } from './department/department.entity';
 import { DepartmentModule } from './department/department.module';
 import { CollegeModule } from './college/college.module';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { User } from './user/user.entity';
 
 @Module({
   imports: [
@@ -22,7 +25,7 @@ import { CollegeModule } from './college/college.module';
         ({
           ...config.get('db'),
           database: 'ncuplus',
-          entities: [],
+          entities: [User],
         } as TypeOrmModuleOptions),
       inject: [ConfigService],
     }),
@@ -39,6 +42,8 @@ import { CollegeModule } from './college/college.module';
     CollegeModule,
     DepartmentModule,
     CourseModule,
+    AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
