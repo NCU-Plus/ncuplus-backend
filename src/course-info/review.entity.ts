@@ -19,10 +19,10 @@ export class Review {
   @Column()
   authorId: number;
 
-  @Column()
+  @Column({ default: 0 })
   likes: number;
 
-  @Column()
+  @Column({ default: 0 })
   dislikes: number;
 
   @ManyToOne(() => CourseInfo, (courseInfo) => courseInfo.reviews)
