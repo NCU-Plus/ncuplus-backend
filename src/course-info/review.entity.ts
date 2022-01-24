@@ -3,10 +3,13 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { CourseInfo } from './course-info.entity';
+import { ReviewDislike } from './review-dislike.entity';
+import { ReviewLike } from './review-like.entity';
 
 @Entity('Reviews')
 export class Review {
@@ -19,11 +22,11 @@ export class Review {
   @Column()
   authorId: number;
 
-  @Column({ default: 0 })
-  likes: number;
+  @OneToMany(() => ReviewLike, (like) => like.review, { eager: true })
+  likes: ReviewLike[];
 
-  @Column({ default: 0 })
-  dislikes: number;
+  @OneToMany(() => ReviewDislike, (dislike) => dislike.review, { eager: true })
+  dislikes: ReviewDislike[];
 
   @ManyToOne(() => CourseInfo, (courseInfo) => courseInfo.reviews)
   courseInfo: CourseInfo;

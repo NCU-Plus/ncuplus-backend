@@ -3,9 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { CommentDislike } from './comment-dislike.entity';
+import { CommentLike } from './comment-like.entity';
 import { CourseInfo } from './course-info.entity';
 
 @Entity('Comments')
@@ -19,11 +22,13 @@ export class Comment {
   @Column()
   authorId: number;
 
-  @Column({ default: 0 })
-  likes: number;
+  @OneToMany(() => CommentLike, (like) => like.comment, { eager: true })
+  likes: CommentLike[];
 
-  @Column({ default: 0 })
-  dislikes: number;
+  @OneToMany(() => CommentDislike, (dislike) => dislike.comment, {
+    eager: true,
+  })
+  dislikes: CommentDislike[];
 
   @ManyToOne(() => CourseInfo, (courseInfo) => courseInfo.comments)
   courseInfo: CourseInfo;

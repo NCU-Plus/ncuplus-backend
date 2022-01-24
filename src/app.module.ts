@@ -17,6 +17,12 @@ import { CourseInfoModule } from './course-info/course-info.module';
 import { CourseInfo } from './course-info/course-info.entity';
 import { Review } from './course-info/review.entity';
 import { Comment } from './course-info/comment.entity';
+import { CommentLike } from './course-info/comment-like.entity';
+import { ReviewLike } from './course-info/review-like.entity';
+import { Like } from './course-info/like.entity';
+import { CommentDislike } from './course-info/comment-dislike.entity';
+import { ReviewDislike } from './course-info/review-dislike.entity';
+import { Dislike } from './course-info/dislike.entity';
 
 @Module({
   imports: [
@@ -29,7 +35,18 @@ import { Comment } from './course-info/comment.entity';
         ({
           ...config.get('db'),
           database: 'ncuplus',
-          entities: [User, CourseInfo, Review, Comment],
+          entities: [
+            User,
+            CourseInfo,
+            Review,
+            Comment,
+            Like,
+            CommentLike,
+            ReviewLike,
+            Dislike,
+            CommentDislike,
+            ReviewDislike,
+          ],
         } as TypeOrmModuleOptions),
       inject: [ConfigService],
     }),
