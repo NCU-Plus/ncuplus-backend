@@ -9,7 +9,6 @@ import { Comment } from './comment.entity';
 import { CommentLike } from './comment-like.entity';
 import { ReviewLike } from './review-like.entity';
 import { Like } from './like.entity';
-import { Dislike } from './dislike.entity';
 import { CommentDislike } from './comment-dislike.entity';
 import { ReviewDislike } from './review-dislike.entity';
 

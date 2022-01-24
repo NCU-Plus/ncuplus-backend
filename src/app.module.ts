@@ -22,8 +22,6 @@ import { ReviewLike } from './course-info/review-like.entity';
 import { Like } from './course-info/like.entity';
 import { CommentDislike } from './course-info/comment-dislike.entity';
 import { ReviewDislike } from './course-info/review-dislike.entity';
-import { Dislike } from './course-info/dislike.entity';
-
 @Module({
   imports: [
     ConfigModule.forRoot({
