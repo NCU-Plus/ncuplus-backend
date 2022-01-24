@@ -43,7 +43,6 @@ import { Dislike } from './course-info/dislike.entity';
             Like,
             CommentLike,
             ReviewLike,
-            Dislike,
             CommentDislike,
             ReviewDislike,
           ],

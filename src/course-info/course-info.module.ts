@@ -22,7 +22,6 @@ import { ReviewDislike } from './review-dislike.entity';
       Like,
       CommentLike,
       ReviewLike,
-      Dislike,
       CommentDislike,
       ReviewDislike,
     ]),
