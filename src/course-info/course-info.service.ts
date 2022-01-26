@@ -53,11 +53,7 @@ export class CourseInfoService {
     }
     return courseInfo;
   }
-  async createComment(
-    courseId: number,
-    authorId: number,
-    content: string,
-  ): Promise<void> {
+  async createComment(courseId: number, authorId: number, content: string) {
     if (content === '')
       throw new BadRequestException('Comment cannot be empty');
     const courseInfo = await this.getCourseInfo(courseId);
@@ -68,20 +64,34 @@ export class CourseInfoService {
       content: content,
       courseInfo: courseInfo,
     });
-    await this.commentRepository.save(comment);
+    const saved = await this.commentRepository.save(comment);
+    return {
+      id: saved.id,
+      content: saved.content,
+      authorId: saved.authorId,
+      likes: saved.likes,
+      dislikes: saved.dislikes,
+      createdAt: saved.createdAt,
+      updatedAt: saved.updatedAt,
+    };
   }
-  async editComment(
-    commentId: number,
-    userId: number,
-    content: string,
-  ): Promise<void> {
+  async editComment(commentId: number, userId: number, content: string) {
     const comment = await this.commentRepository.findOne(commentId);
     if (!comment)
       throw new NotFoundException(`Comment with ID ${commentId} not found`);
     if (comment.authorId !== userId)
       throw new ForbiddenException('You are not the author of this comment');
     comment.content = content;
-    await this.commentRepository.save(comment);
+    const saved = await this.commentRepository.save(comment);
+    return {
+      id: saved.id,
+      content: saved.content,
+      authorId: saved.authorId,
+      likes: saved.likes,
+      dislikes: saved.dislikes,
+      createdAt: saved.createdAt,
+      updatedAt: saved.updatedAt,
+    };
   }
   async deleteComment(commentId: number, userId: number): Promise<void> {
     const comment = await this.commentRepository.findOne(commentId);
@@ -91,30 +101,32 @@ export class CourseInfoService {
       throw new ForbiddenException('You are not the author of this comment');
     await this.commentRepository.delete(commentId);
   }
-  async likeComment(commentId: number, userId: number): Promise<void> {
+  async likeComment(commentId: number, userId: number) {
     const comment = await this.commentRepository.findOne(commentId);
     await this.checkLikeCondition(comment, commentId, userId);
 
-    await this.commentLikeRepository.save(
+    const saved = await this.commentLikeRepository.save(
       this.commentLikeRepository.create({ comment: comment, authorId: userId }),
     );
+    return { id: saved.id, authorId: saved.authorId };
   }
-  async dislikeComment(commentId: number, userId: number): Promise<void> {
+  async dislikeComment(commentId: number, userId: number) {
     const comment = await this.commentRepository.findOne(commentId);
     await this.checkLikeCondition(comment, commentId, userId);
 
-    await this.commentDislikeRepository.save(
+    const saved = await this.commentDislikeRepository.save(
       this.commentDislikeRepository.create({
         comment: comment,
         authorId: userId,
       }),
     );
+    return { id: saved.id, authorId: saved.authorId };
   }
   async createReview(
     courseId: number,
     authorId: number,
     content: string,
-  ): Promise<void> {
+  ): Promise<Review> {
     if (content === '') throw new BadRequestException('Review cannot be empty');
     const courseInfo = await this.getCourseInfo(courseId);
     if (!courseInfo)
@@ -124,20 +136,20 @@ export class CourseInfoService {
       content: content,
       courseInfo: courseInfo,
     });
-    await this.reviewRepository.save(review);
+    return await this.reviewRepository.save(review);
   }
   async editReview(
     commentId: number,
     userId: number,
     content: string,
-  ): Promise<void> {
+  ): Promise<Review> {
     const review = await this.reviewRepository.findOne(commentId);
     if (!review)
       throw new NotFoundException(`Review with ID ${commentId} not found`);
     if (review.authorId !== userId)
       throw new ForbiddenException('You are not the author of this comment');
     review.content = content;
-    await this.reviewRepository.save(review);
+    return await this.reviewRepository.save(review);
   }
   async deleteReview(commentId: number, userId: number): Promise<void> {
     const review = await this.reviewRepository.findOne(commentId);
@@ -147,19 +159,22 @@ export class CourseInfoService {
       throw new ForbiddenException('You are not the author of this comment');
     await this.reviewRepository.delete(commentId);
   }
-  async likeReview(reviewId: number, userId: number): Promise<void> {
+  async likeReview(reviewId: number, userId: number): Promise<ReviewLike> {
     const review = await this.reviewRepository.findOne(reviewId);
     await this.checkLikeCondition(review, reviewId, userId);
 
-    await this.reviewLikeRepository.save(
+    return await this.reviewLikeRepository.save(
       this.reviewLikeRepository.create({ review: review, authorId: userId }),
     );
   }
-  async dislikeReview(reviewId: number, userId: number): Promise<void> {
+  async dislikeReview(
+    reviewId: number,
+    userId: number,
+  ): Promise<ReviewDislike> {
     const review = await this.reviewRepository.findOne(reviewId);
     await this.checkLikeCondition(review, reviewId, userId);
 
-    await this.reviewDislikeRepository.save(
+    return await this.reviewDislikeRepository.save(
       this.reviewDislikeRepository.create({
         review: review,
         authorId: userId,
