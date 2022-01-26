@@ -1,4 +1,11 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UserService } from './user.service';
 
@@ -9,6 +16,28 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get()
   async getUser(@Request() req) {
-    return this.userService.getUser(req.user);
+    return {
+      statusCode: 200,
+      message: 'OK',
+      data: await this.userService.getUser(req.user),
+    };
+  }
+
+  @Get('names')
+  async getUsernames() {
+    return {
+      statusCode: 200,
+      message: 'OK',
+      data: await this.userService.getUsernames(),
+    };
+  }
+
+  @Get('name/:id')
+  async getUsername(@Param('id', ParseIntPipe) id: number) {
+    return {
+      statusCode: 200,
+      message: 'OK',
+      data: (await this.userService.getUser(id)).name,
+    };
   }
 }

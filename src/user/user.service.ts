@@ -22,4 +22,10 @@ export class UserService {
   async getUser(id: number): Promise<User> {
     return await this.userRepository.findOne(id);
   }
+  async getUsernames(): Promise<User[]> {
+    const users = await this.userRepository.find({
+      select: ['id', 'name'],
+    });
+    return users;
+  }
 }
