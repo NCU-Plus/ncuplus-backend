@@ -11,6 +11,7 @@ import { ReviewLike } from './review-like.entity';
 import { Like } from './like.entity';
 import { CommentDislike } from './comment-dislike.entity';
 import { ReviewDislike } from './review-dislike.entity';
+import { PastExam } from './past-exam.entity';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ReviewDislike } from './review-dislike.entity';
       ReviewLike,
       CommentDislike,
       ReviewDislike,
+      PastExam,
     ]),
     CourseModule,
   ],

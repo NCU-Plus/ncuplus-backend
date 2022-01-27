@@ -16,6 +16,7 @@ import { CommentLike } from './comment-like.entity';
 import { Dislike } from './dislike.entity';
 import { ReviewDislike } from './review-dislike.entity';
 import { ReviewLike } from './review-like.entity';
+import { PastExam } from './past-exam.entity';
 
 @Injectable()
 export class CourseInfoService {
@@ -37,6 +38,8 @@ export class CourseInfoService {
     private readonly commentDislikeRepository: Repository<CommentDislike>,
     @InjectRepository(ReviewDislike)
     private readonly reviewDislikeRepository: Repository<ReviewDislike>,
+    @InjectRepository(PastExam)
+    private readonly pastExamRepository: Repository<PastExam>,
   ) {}
   async getCourseInfo(courseId: number): Promise<CourseInfo> {
     let courseInfo = await this.courseInfoRepository.findOne(courseId);
@@ -51,6 +54,7 @@ export class CourseInfoService {
       courseInfo.comments = [];
       await this.courseInfoRepository.save(courseInfo);
     }
+    courseInfo.pastExams = await this.getPastExams(courseInfo);
     return courseInfo;
   }
   async createComment(courseId: number, authorId: number, content: string) {
@@ -180,6 +184,54 @@ export class CourseInfoService {
         authorId: userId,
       }),
     );
+  }
+  async getPastExams(courseInfo: CourseInfo) {
+    const pastExams = await this.pastExamRepository.find({
+      select: [
+        'id',
+        'year',
+        'description',
+        'originFilename',
+        'size',
+        'downloadCount',
+        'uploaderId',
+        'createdAt',
+        'updatedAt',
+      ],
+      where: { courseInfo: courseInfo },
+    });
+    return pastExams;
+  }
+  async uploadPastExam(
+    courseId: number,
+    uploaderId: number,
+    year: string,
+    description: string,
+    file: Express.Multer.File,
+  ) {
+    const saved = await this.pastExamRepository.save(
+      this.pastExamRepository.create({
+        uploaderId: uploaderId,
+        year: year,
+        description: description,
+        originFilename: file.originalname,
+        path: file.path,
+        size: file.size,
+        mimeType: file.mimetype,
+        courseInfo: await this.getCourseInfo(courseId),
+      }),
+    );
+    return {
+      id: saved.id,
+      year: saved.year,
+      description: saved.description,
+      originFilename: saved.originFilename,
+      size: saved.size,
+      downloadCount: saved.downloadCount,
+      uploaderId: saved.uploaderId,
+      createdAt: saved.createdAt,
+      updatedAt: saved.updatedAt,
+    };
   }
   private async checkLikeCondition(
     target: Comment | Review,

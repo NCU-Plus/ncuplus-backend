@@ -7,7 +7,12 @@ import {
   Post,
   UseGuards,
   Request,
+  UseInterceptors,
+  UploadedFile,
+  HttpCode,
+  BadRequestException,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CourseInfoService } from './course-info.service';
 
@@ -149,6 +154,52 @@ export class CourseInfoController {
       statusCode: 200,
       message: 'OK',
       data: await this.courseInfoService.dislikeReview(id, req.user.id),
+    };
+  }
+  @HttpCode(201)
+  @Post('past-exam/upload')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      dest: 'uploads/past-exam/',
+      fileFilter(req, file, cb) {
+        const acceptedMimetypes = [
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'application/vnd.ms-powerpoint',
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+          'image/jpeg',
+          'image/png',
+          'image/jpg',
+          'application/zip',
+          'application/x-7z-compressed',
+          'application/x-rar-compressed',
+        ];
+        if (acceptedMimetypes.includes(file.mimetype)) cb(null, true);
+        else cb(null, false);
+      },
+      limits: { fileSize: 15728640 }, // 15MB
+    }),
+  )
+  async uploadFile(
+    @Request() req,
+    @Body('courseId', ParseIntPipe) courseId: number,
+    @Body('year') year: string,
+    @Body('description') description: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) throw new BadRequestException('File is not accepted');
+    return {
+      statusCode: 201,
+      message: 'Created',
+      data: await this.courseInfoService.uploadPastExam(
+        courseId,
+        req.user.id,
+        year,
+        description,
+        file,
+      ),
     };
   }
 }

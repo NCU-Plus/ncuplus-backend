@@ -22,6 +22,7 @@ import { ReviewLike } from './course-info/review-like.entity';
 import { Like } from './course-info/like.entity';
 import { CommentDislike } from './course-info/comment-dislike.entity';
 import { ReviewDislike } from './course-info/review-dislike.entity';
+import { PastExam } from './course-info/past-exam.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -43,6 +44,7 @@ import { ReviewDislike } from './course-info/review-dislike.entity';
             ReviewLike,
             CommentDislike,
             ReviewDislike,
+            PastExam,
           ],
         } as TypeOrmModuleOptions),
       inject: [ConfigService],
