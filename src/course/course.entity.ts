@@ -46,7 +46,7 @@ export class Course {
   @Column()
   limitCnt: number;
 
-  @Column('tinyint')
+  @Column()
   admitCnt: number;
 
   @Column()
