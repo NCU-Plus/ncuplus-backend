@@ -253,6 +253,14 @@ export class CourseInfoService {
       disposition: `attachment; filename=${pastExam.originFilename}`,
     });
   }
+  async deletePastExam(pastExamId: number, userId: number) {
+    const pastExam = await this.pastExamRepository.findOne(pastExamId);
+    if (!pastExam)
+      throw new NotFoundException(`Past Exam with ID ${pastExamId} not found`);
+    if (pastExam.uploaderId !== userId)
+      throw new ForbiddenException('You are not the uploader of this file');
+    await this.pastExamRepository.delete(pastExamId);
+  }
   private async checkLikeCondition(
     target: Comment | Review,
     commentId: number,

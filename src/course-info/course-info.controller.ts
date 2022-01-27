@@ -207,4 +207,13 @@ export class CourseInfoController {
   getPastExam(@Param('id', ParseIntPipe) id: number) {
     return this.courseInfoService.getPastExam(id);
   }
+  @UseGuards(JwtAuthGuard)
+  @Post('past-exam/delete')
+  async deletePastExam(
+    @Request() req,
+    @Body('pastExamId', ParseIntPipe) id: number,
+  ) {
+    await this.courseInfoService.deletePastExam(id, req.user.id);
+    return { statusCode: 200, message: 'OK' };
+  }
 }
