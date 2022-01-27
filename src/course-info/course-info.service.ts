@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  StreamableFile,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CourseService } from '../course/course.service';
@@ -17,6 +18,7 @@ import { Dislike } from './dislike.entity';
 import { ReviewDislike } from './review-dislike.entity';
 import { ReviewLike } from './review-like.entity';
 import { PastExam } from './past-exam.entity';
+import { createReadStream } from 'fs';
 
 @Injectable()
 export class CourseInfoService {
@@ -232,6 +234,24 @@ export class CourseInfoService {
       createdAt: saved.createdAt,
       updatedAt: saved.updatedAt,
     };
+  }
+  async getPastExam(pastExamId: number) {
+    const pastExam = await this.pastExamRepository.findOne(pastExamId, {
+      select: ['path', 'originFilename'],
+    });
+    if (!pastExam) {
+      throw new NotFoundException(`Past Exam with ID ${pastExamId} not found`);
+    }
+
+    await this.pastExamRepository.increment(
+      { id: pastExamId },
+      'downloadCount',
+      1,
+    );
+
+    return new StreamableFile(createReadStream(pastExam.path), {
+      disposition: `attachment; filename=${pastExam.originFilename}`,
+    });
   }
   private async checkLikeCondition(
     target: Comment | Review,

@@ -202,4 +202,9 @@ export class CourseInfoController {
       ),
     };
   }
+  @UseGuards(JwtAuthGuard)
+  @Get('past-exam/:id')
+  getPastExam(@Param('id', ParseIntPipe) id: number) {
+    return this.courseInfoService.getPastExam(id);
+  }
 }
