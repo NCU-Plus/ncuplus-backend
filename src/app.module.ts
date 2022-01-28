@@ -13,16 +13,17 @@ import { CollegeModule } from './college/college.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { User } from './user/user.entity';
-import { CourseInfoModule } from './course-info/course-info.module';
-import { CourseInfo } from './course-info/course-info.entity';
-import { Review } from './course-info/review.entity';
-import { Comment } from './course-info/comment.entity';
-import { CommentLike } from './course-info/comment-like.entity';
-import { ReviewLike } from './course-info/review-like.entity';
-import { Like } from './course-info/like.entity';
-import { CommentDislike } from './course-info/comment-dislike.entity';
-import { ReviewDislike } from './course-info/review-dislike.entity';
-import { PastExam } from './course-info/past-exam.entity';
+import { CourseInfoModule } from './course-feedback/course-feedback.module';
+import { CourseInfo } from './course-feedback/course-info.entity';
+import { Review } from './course-feedback/review.entity';
+import { Comment } from './course-feedback/comment.entity';
+import { CommentLike } from './course-feedback/comment-like.entity';
+import { ReviewLike } from './course-feedback/review-like.entity';
+import { Like } from './course-feedback/like.entity';
+import { CommentDislike } from './course-feedback/comment-dislike.entity';
+import { ReviewDislike } from './course-feedback/review-dislike.entity';
+import { PastExam } from './course-feedback/past-exam.entity';
+import { CourseFeedback } from './course-feedback/course-feedback.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -37,6 +38,7 @@ import { PastExam } from './course-info/past-exam.entity';
           entities: [
             User,
             CourseInfo,
+            CourseFeedback,
             Review,
             Comment,
             Like,

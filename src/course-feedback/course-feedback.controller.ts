@@ -14,31 +14,31 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { CourseInfoService } from './course-info.service';
+import { CourseInfoService } from './course-feedback.service';
 
-@Controller('course-info')
+@Controller('course-feedback')
 export class CourseInfoController {
   constructor(private readonly courseInfoService: CourseInfoService) {}
-  @Get(':id')
-  async getCourseInfo(@Param('id', ParseIntPipe) id: number) {
+  @Get(':classNo')
+  async getCourseInfo(@Param('classNo') classNo: string) {
     return {
       statusCode: 200,
       message: 'OK',
-      data: await this.courseInfoService.getCourseInfo(id),
+      data: await this.courseInfoService.getCourseFeedback(classNo),
     };
   }
   @UseGuards(JwtAuthGuard)
   @Post('comment')
   async createComment(
     @Request() req,
-    @Body('courseId', ParseIntPipe) courseId: number,
+    @Body('classNo') classNo: string,
     @Body('content') content: string,
   ) {
     return {
       statusCode: 200,
       message: 'OK',
       data: await this.courseInfoService.createComment(
-        courseId,
+        classNo,
         req.user.id,
         content,
       ),
@@ -97,14 +97,14 @@ export class CourseInfoController {
   @Post('review')
   async createReview(
     @Request() req,
-    @Body('courseId', ParseIntPipe) courseId: number,
+    @Body('classNo') classNo: string,
     @Body('content') content: string,
   ) {
     return {
       statusCode: 200,
       message: 'OK',
       data: await this.courseInfoService.createReview(
-        courseId,
+        classNo,
         req.user.id,
         content,
       ),
@@ -184,7 +184,7 @@ export class CourseInfoController {
   )
   async uploadFile(
     @Request() req,
-    @Body('courseId', ParseIntPipe) courseId: number,
+    @Body('classNo') classNo: string,
     @Body('year') year: string,
     @Body('description') description: string,
     @UploadedFile() file: Express.Multer.File,
@@ -194,7 +194,7 @@ export class CourseInfoController {
       statusCode: 201,
       message: 'Created',
       data: await this.courseInfoService.uploadPastExam(
-        courseId,
+        classNo,
         req.user.id,
         year,
         description,

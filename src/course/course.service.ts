@@ -54,4 +54,12 @@ export class CourseService {
     if (!course) throw new NotFoundException(`Course with ID ${id} not found`);
     return course;
   }
+  async getCoursesByClassNo(classNo: string): Promise<Course[]> {
+    const course = await this.courseRepository.find({
+      where: { classNo: classNo },
+    });
+    if (!course)
+      throw new NotFoundException(`Courses with classNo ${classNo} not found`);
+    return course;
+  }
 }

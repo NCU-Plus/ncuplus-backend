@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { CourseFeedback } from './course-feedback.entity';
 import { CourseInfo } from './course-info.entity';
 import { ReviewDislike } from './review-dislike.entity';
 import { ReviewLike } from './review-like.entity';
@@ -28,8 +29,8 @@ export class Review {
   @OneToMany(() => ReviewDislike, (dislike) => dislike.review, { eager: true })
   dislikes: ReviewDislike[];
 
-  @ManyToOne(() => CourseInfo, (courseInfo) => courseInfo.reviews)
-  courseInfo: CourseInfo;
+  @ManyToOne(() => CourseFeedback, (courseFeedback) => courseFeedback.reviews)
+  courseFeedback: CourseFeedback;
 
   @CreateDateColumn()
   createdAt: Date;

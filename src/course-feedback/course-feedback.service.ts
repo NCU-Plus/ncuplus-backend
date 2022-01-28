@@ -19,6 +19,7 @@ import { ReviewDislike } from './review-dislike.entity';
 import { ReviewLike } from './review-like.entity';
 import { PastExam } from './past-exam.entity';
 import { createReadStream } from 'fs';
+import { CourseFeedback } from './course-feedback.entity';
 
 @Injectable()
 export class CourseInfoService {
@@ -26,6 +27,8 @@ export class CourseInfoService {
     private readonly courseService: CourseService,
     @InjectRepository(CourseInfo)
     private readonly courseInfoRepository: Repository<CourseInfo>,
+    @InjectRepository(CourseFeedback)
+    private readonly courseFeedbackRepository: Repository<CourseFeedback>,
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
     @InjectRepository(Review)
@@ -52,23 +55,42 @@ export class CourseInfoService {
       this.courseService.getCourse(courseId);
       courseInfo = new CourseInfo();
       courseInfo.courseId = courseId;
-      courseInfo.reviews = [];
-      courseInfo.comments = [];
       await this.courseInfoRepository.save(courseInfo);
     }
-    courseInfo.pastExams = await this.getPastExams(courseInfo);
     return courseInfo;
   }
-  async createComment(courseId: number, authorId: number, content: string) {
+  async getCourseFeedback(classNo: string): Promise<CourseFeedback> {
+    let courseFeedback = await this.courseFeedbackRepository.findOne(classNo, {
+      select: ['classNo', 'comments', 'reviews', 'pastExams'],
+    });
+    if (!courseFeedback) {
+      const courses = await this.courseService.getCoursesByClassNo(classNo);
+      if (courses.length === 0) {
+        throw new NotFoundException(`Course with classNo ${classNo} not found`);
+      }
+      courseFeedback = new CourseFeedback();
+      courseFeedback.classNo = classNo;
+      courseFeedback.reviews = [];
+      courseFeedback.comments = [];
+      courseFeedback.pastExams = [];
+      const courseInfos: CourseInfo[] = [];
+      for (const course of courses)
+        courseInfos.push(await this.getCourseInfo(course.id));
+      courseFeedback.courseInfos = courseInfos;
+      await this.courseFeedbackRepository.save(courseFeedback);
+    }
+    return courseFeedback;
+  }
+  async createComment(classNo: string, authorId: number, content: string) {
     if (content === '')
       throw new BadRequestException('Comment cannot be empty');
-    const courseInfo = await this.getCourseInfo(courseId);
-    if (!courseInfo)
-      throw new NotFoundException(`Course with ID ${courseId} not found`);
+    const courseFeedback = await this.getCourseFeedback(classNo);
+    if (!courseFeedback)
+      throw new NotFoundException(`Course with classNo ${classNo} not found`);
     const comment = this.commentRepository.create({
       authorId: authorId,
       content: content,
-      courseInfo: courseInfo,
+      courseFeedback: courseFeedback,
     });
     const saved = await this.commentRepository.save(comment);
     return {
@@ -129,18 +151,18 @@ export class CourseInfoService {
     return { id: saved.id, authorId: saved.authorId };
   }
   async createReview(
-    courseId: number,
+    classNo: string,
     authorId: number,
     content: string,
   ): Promise<Review> {
     if (content === '') throw new BadRequestException('Review cannot be empty');
-    const courseInfo = await this.getCourseInfo(courseId);
-    if (!courseInfo)
-      throw new NotFoundException(`Course with ID ${courseId} not found`);
+    const courseFeedback = await this.getCourseFeedback(classNo);
+    if (!courseFeedback)
+      throw new NotFoundException(`Course with classNo ${classNo} not found`);
     const review = this.reviewRepository.create({
       authorId: authorId,
       content: content,
-      courseInfo: courseInfo,
+      courseFeedback: courseFeedback,
     });
     return await this.reviewRepository.save(review);
   }
@@ -205,7 +227,7 @@ export class CourseInfoService {
     return pastExams;
   }
   async uploadPastExam(
-    courseId: number,
+    classNo: string,
     uploaderId: number,
     year: string,
     description: string,
@@ -220,7 +242,7 @@ export class CourseInfoService {
         path: file.path,
         size: file.size,
         mimeType: file.mimetype,
-        courseInfo: await this.getCourseInfo(courseId),
+        courseFeedback: await this.getCourseFeedback(classNo),
       }),
     );
     return {

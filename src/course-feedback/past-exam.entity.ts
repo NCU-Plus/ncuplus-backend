@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { CourseFeedback } from './course-feedback.entity';
 import { CourseInfo } from './course-info.entity';
 
 @Entity('PastExams')
@@ -37,8 +38,8 @@ export class PastExam {
   @Column()
   uploaderId: number;
 
-  @ManyToOne(() => CourseInfo, (courseInfo) => courseInfo.pastExams)
-  courseInfo: CourseInfo;
+  @ManyToOne(() => CourseFeedback, (courseFeedback) => courseFeedback.pastExams)
+  courseFeedback: CourseFeedback;
 
   @CreateDateColumn()
   createdAt: Date;

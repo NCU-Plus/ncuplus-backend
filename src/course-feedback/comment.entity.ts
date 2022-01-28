@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { CommentDislike } from './comment-dislike.entity';
 import { CommentLike } from './comment-like.entity';
+import { CourseFeedback } from './course-feedback.entity';
 import { CourseInfo } from './course-info.entity';
 
 @Entity('Comments')
@@ -30,8 +31,8 @@ export class Comment {
   })
   dislikes: CommentDislike[];
 
-  @ManyToOne(() => CourseInfo, (courseInfo) => courseInfo.comments)
-  courseInfo: CourseInfo;
+  @ManyToOne(() => CourseFeedback, (courseFeedback) => courseFeedback.comments)
+  courseFeedback: CourseFeedback;
 
   @CreateDateColumn()
   createdAt: Date;
