@@ -7,7 +7,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { CourseFeedback } from './course-feedback.entity';
-import { CourseInfo } from './course-info.entity';
 
 @Entity('PastExams')
 export class PastExam {

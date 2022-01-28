@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { CourseFeedback } from './course-feedback.entity';
-import { CourseInfo } from './course-info.entity';
 import { ReviewDislike } from './review-dislike.entity';
 import { ReviewLike } from './review-like.entity';
 

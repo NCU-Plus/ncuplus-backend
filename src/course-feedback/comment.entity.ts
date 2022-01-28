@@ -10,7 +10,6 @@ import {
 import { CommentDislike } from './comment-dislike.entity';
 import { CommentLike } from './comment-like.entity';
 import { CourseFeedback } from './course-feedback.entity';
-import { CourseInfo } from './course-info.entity';
 
 @Entity('Comments')
 export class Comment {
