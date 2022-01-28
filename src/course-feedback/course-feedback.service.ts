@@ -79,6 +79,7 @@ export class CourseInfoService {
       courseFeedback.courseInfos = courseInfos;
       await this.courseFeedbackRepository.save(courseFeedback);
     }
+    courseFeedback.pastExams = await this.getPastExams(courseFeedback);
     return courseFeedback;
   }
   async createComment(classNo: string, authorId: number, content: string) {
@@ -209,7 +210,7 @@ export class CourseInfoService {
       }),
     );
   }
-  async getPastExams(courseInfo: CourseInfo) {
+  async getPastExams(courseFeedback: CourseFeedback) {
     const pastExams = await this.pastExamRepository.find({
       select: [
         'id',
@@ -222,7 +223,7 @@ export class CourseInfoService {
         'createdAt',
         'updatedAt',
       ],
-      where: { courseInfo: courseInfo },
+      where: { courseFeedback: courseFeedback },
     });
     return pastExams;
   }
