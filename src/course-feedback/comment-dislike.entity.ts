@@ -4,6 +4,8 @@ import { Comment } from './comment.entity';
 
 @ChildEntity('CommentDislikes')
 export class CommentDislike extends Dislike {
-  @ManyToOne(() => Comment, (comment) => comment.dislikes)
+  @ManyToOne(() => Comment, (comment) => comment.dislikes, {
+    onDelete: 'CASCADE',
+  })
   comment: Comment;
 }

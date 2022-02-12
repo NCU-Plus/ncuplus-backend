@@ -4,6 +4,8 @@ import { Review } from './review.entity';
 
 @ChildEntity('ReviewLikes')
 export class ReviewLike extends Like {
-  @ManyToOne(() => Review, (review) => review.likes)
+  @ManyToOne(() => Review, (review) => review.likes, {
+    onDelete: 'CASCADE',
+  })
   review: Review;
 }
