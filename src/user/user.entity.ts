@@ -18,6 +18,9 @@ export class User {
   identifier: string;
 
   @Column()
+  studentId: string;
+
+  @Column()
   name: string;
 
   @CreateDateColumn()

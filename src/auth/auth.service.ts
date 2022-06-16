@@ -1,24 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
+import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly userService: UserService,
-    private readonly jewService: JwtService,
-  ) {}
+  constructor(private readonly jwtService: JwtService) {}
 
-  // TODO: use portal OAuth2 create an account
-
-  async getJwtToken(protalId: number) {
+  public async getJwtToken(user: User) {
     const payload = {
-      sub: (await this.userService.getUserByPortalId(protalId)).id,
+      sub: user.id,
     };
-    return {
-      statusCode: 200,
-      message: 'OK',
-      data: { token: await this.jewService.signAsync(payload) },
-    };
+    return await this.jwtService.signAsync(payload);
   }
 }

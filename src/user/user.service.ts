@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -10,14 +10,13 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
   async getUserByPortalId(protalId: number): Promise<User> {
-    const users = await this.userRepository.find({
+    const user = await this.userRepository.findOne({
       select: ['id', 'portalId', 'identifier', 'name'],
       where: {
         portalId: protalId,
       },
     });
-    if (users.length === 0) throw new UnauthorizedException("Can't find user.");
-    return users[0];
+    return user;
   }
   async getUser(id: number): Promise<User> {
     return await this.userRepository.findOne(id);
@@ -27,5 +26,18 @@ export class UserService {
       select: ['id', 'name'],
     });
     return users;
+  }
+  async createUser(
+    portalId: number,
+    identifier: string,
+    studentId: string,
+  ): Promise<User> {
+    const user = this.userRepository.create({
+      portalId: portalId,
+      identifier: identifier,
+      name: studentId,
+      studentId: studentId,
+    });
+    return await this.userRepository.save(user);
   }
 }
