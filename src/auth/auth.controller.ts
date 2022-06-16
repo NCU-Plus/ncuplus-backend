@@ -1,11 +1,4 @@
-import {
-  BadRequestException,
-  Controller,
-  Get,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { User } from 'src/user/user.entity';
 import { AuthService } from './auth.service';
@@ -18,7 +11,7 @@ export class AuthController {
 
   @UseGuards(OAuth2AuthGuard)
   @Get('oauth')
-  async oauth(@Res() res: Response) {}
+  async oauth() {}
 
   @UseGuards(OAuth2AuthGuard)
   @Get('authorize')

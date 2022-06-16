@@ -1,4 +1,4 @@
-import { Strategy, VerifyCallback } from 'passport-oauth2';
+import { Strategy } from 'passport-oauth2';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -43,7 +43,6 @@ export class OAuth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
     accessToken: string,
     refreshToken: string,
     profile: PortalUser,
-    verified: VerifyCallback,
   ) {
     let user = await this.userService.getUserByPortalId(profile.id);
     if (!user) {
