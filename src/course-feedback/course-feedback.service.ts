@@ -11,18 +11,13 @@ import { Repository } from 'typeorm';
 import { CourseInfo } from './course-info.entity';
 import { Comment } from './comment.entity';
 import { Review } from './review.entity';
-import { Like } from './like.entity';
-import { CommentDislike } from './comment-dislike.entity';
-import { CommentLike } from './comment-like.entity';
-import { Dislike } from './dislike.entity';
-import { ReviewDislike } from './review-dislike.entity';
-import { ReviewLike } from './review-like.entity';
 import { PastExam } from './past-exam.entity';
 import { createReadStream } from 'fs';
 import { CourseFeedback } from './course-feedback.entity';
+import { Reaction, ReactionType } from './reaction.entity';
 
 @Injectable()
-export class CourseInfoService {
+export class CourseFeedbackService {
   constructor(
     private readonly courseService: CourseService,
     @InjectRepository(CourseInfo)
@@ -33,16 +28,8 @@ export class CourseInfoService {
     private readonly commentRepository: Repository<Comment>,
     @InjectRepository(Review)
     private readonly reviewRepository: Repository<Review>,
-    @InjectRepository(Like)
-    private readonly likeRepository: Repository<Like>,
-    @InjectRepository(CommentLike)
-    private readonly commentLikeRepository: Repository<CommentLike>,
-    @InjectRepository(ReviewLike)
-    private readonly reviewLikeRepository: Repository<ReviewLike>,
-    @InjectRepository(CommentDislike)
-    private readonly commentDislikeRepository: Repository<CommentDislike>,
-    @InjectRepository(ReviewDislike)
-    private readonly reviewDislikeRepository: Repository<ReviewDislike>,
+    @InjectRepository(Reaction)
+    private readonly reactionRepository: Repository<Reaction>,
     @InjectRepository(PastExam)
     private readonly pastExamRepository: Repository<PastExam>,
   ) {}
@@ -98,8 +85,7 @@ export class CourseInfoService {
       id: saved.id,
       content: saved.content,
       authorId: saved.authorId,
-      likes: saved.likes,
-      dislikes: saved.dislikes,
+      reactions: saved.reactions,
       createdAt: saved.createdAt,
       updatedAt: saved.updatedAt,
     };
@@ -116,8 +102,7 @@ export class CourseInfoService {
       id: saved.id,
       content: saved.content,
       authorId: saved.authorId,
-      likes: saved.likes,
-      dislikes: saved.dislikes,
+      reactions: saved.reactions,
       createdAt: saved.createdAt,
       updatedAt: saved.updatedAt,
     };
@@ -134,8 +119,12 @@ export class CourseInfoService {
     const comment = await this.commentRepository.findOne(commentId);
     await this.checkLikeCondition(comment, commentId, userId);
 
-    const saved = await this.commentLikeRepository.save(
-      this.commentLikeRepository.create({ comment: comment, authorId: userId }),
+    const saved = await this.reactionRepository.save(
+      this.reactionRepository.create({
+        comment: comment,
+        authorId: userId,
+        type: ReactionType.LIKE,
+      }),
     );
     return { id: saved.id, authorId: saved.authorId };
   }
@@ -143,10 +132,11 @@ export class CourseInfoService {
     const comment = await this.commentRepository.findOne(commentId);
     await this.checkLikeCondition(comment, commentId, userId);
 
-    const saved = await this.commentDislikeRepository.save(
-      this.commentDislikeRepository.create({
+    const saved = await this.reactionRepository.save(
+      this.reactionRepository.create({
         comment: comment,
         authorId: userId,
+        type: ReactionType.DISLIKE,
       }),
     );
     return { id: saved.id, authorId: saved.authorId };
@@ -188,25 +178,27 @@ export class CourseInfoService {
       throw new ForbiddenException('You are not the author of this comment');
     await this.reviewRepository.delete(commentId);
   }
-  async likeReview(reviewId: number, userId: number): Promise<ReviewLike> {
+  async likeReview(reviewId: number, userId: number): Promise<Reaction> {
     const review = await this.reviewRepository.findOne(reviewId);
     await this.checkLikeCondition(review, reviewId, userId);
 
-    return await this.reviewLikeRepository.save(
-      this.reviewLikeRepository.create({ review: review, authorId: userId }),
-    );
-  }
-  async dislikeReview(
-    reviewId: number,
-    userId: number,
-  ): Promise<ReviewDislike> {
-    const review = await this.reviewRepository.findOne(reviewId);
-    await this.checkLikeCondition(review, reviewId, userId);
-
-    return await this.reviewDislikeRepository.save(
-      this.reviewDislikeRepository.create({
+    return await this.reactionRepository.save(
+      this.reactionRepository.create({
         review: review,
         authorId: userId,
+        type: ReactionType.LIKE,
+      }),
+    );
+  }
+  async dislikeReview(reviewId: number, userId: number): Promise<Reaction> {
+    const review = await this.reviewRepository.findOne(reviewId);
+    await this.checkLikeCondition(review, reviewId, userId);
+
+    return await this.reactionRepository.save(
+      this.reactionRepository.create({
+        review: review,
+        authorId: userId,
+        type: ReactionType.LIKE,
       }),
     );
   }
@@ -298,19 +290,19 @@ export class CourseInfoService {
         `You cannot like or dislike your own ${target.constructor.name}`,
       );
 
-    let likesAndDislikes: Like[] | Dislike[];
+    let reactions: Reaction[];
 
     if (target instanceof Comment) {
-      likesAndDislikes = await this.likeRepository.find({
+      reactions = await this.reactionRepository.find({
         where: { comment: target, authorId: userId },
       });
     } else if (target instanceof Review) {
-      likesAndDislikes = await this.likeRepository.find({
+      reactions = await this.reactionRepository.find({
         where: { review: target, authorId: userId },
       });
     }
 
-    if (likesAndDislikes.length > 0)
+    if (reactions.length > 0)
       throw new ForbiddenException(
         'You have already liked or disliked this comment',
       );

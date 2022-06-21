@@ -1,39 +1,12 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import { CourseFeedback } from './course-feedback.entity';
-import { ReviewDislike } from './review-dislike.entity';
-import { ReviewLike } from './review-like.entity';
+import { Column, Entity, OneToMany } from 'typeorm';
+import { Content } from './content.entity';
+import { Reaction } from './reaction.entity';
 
 @Entity('Reviews')
-export class Review {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Review extends Content {
   @Column('text')
   content: string;
 
-  @Column()
-  authorId: number;
-
-  @OneToMany(() => ReviewLike, (like) => like.review, { eager: true })
-  likes: ReviewLike[];
-
-  @OneToMany(() => ReviewDislike, (dislike) => dislike.review, { eager: true })
-  dislikes: ReviewDislike[];
-
-  @ManyToOne(() => CourseFeedback, (courseFeedback) => courseFeedback.reviews)
-  courseFeedback: CourseFeedback;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @OneToMany(() => Reaction, (reaction) => reaction.review, { eager: true })
+  reactions: Reaction[];
 }
