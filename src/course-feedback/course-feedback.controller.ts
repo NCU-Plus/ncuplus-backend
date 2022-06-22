@@ -14,13 +14,13 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { CourseInfoService } from './course-feedback.service';
+import { CourseFeedbackService } from './course-feedback.service';
 
 @Controller('course-feedback')
-export class CourseInfoController {
-  constructor(private readonly courseInfoService: CourseInfoService) {}
+export class CourseFeedbackController {
+  constructor(private readonly courseInfoService: CourseFeedbackService) {}
   @Get(':classNo')
-  async getCourseInfo(@Param('classNo') classNo: string) {
+  async getCourseFeedback(@Param('classNo') classNo: string) {
     return {
       statusCode: 200,
       message: 'OK',

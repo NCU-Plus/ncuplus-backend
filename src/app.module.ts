@@ -12,18 +12,8 @@ import { DepartmentModule } from './department/department.module';
 import { CollegeModule } from './college/college.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
-import { User } from './user/user.entity';
-import { CourseInfoModule } from './course-feedback/course-feedback.module';
-import { CourseInfo } from './course-feedback/course-info.entity';
-import { Review } from './course-feedback/review.entity';
-import { Comment } from './course-feedback/comment.entity';
-import { CommentLike } from './course-feedback/comment-like.entity';
-import { ReviewLike } from './course-feedback/review-like.entity';
-import { Like } from './course-feedback/like.entity';
-import { CommentDislike } from './course-feedback/comment-dislike.entity';
-import { ReviewDislike } from './course-feedback/review-dislike.entity';
-import { PastExam } from './course-feedback/past-exam.entity';
-import { CourseFeedback } from './course-feedback/course-feedback.entity';
+import { CourseFeedbackModule } from './course-feedback/course-feedback.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -35,19 +25,7 @@ import { CourseFeedback } from './course-feedback/course-feedback.entity';
         ({
           ...config.get('db'),
           database: 'ncuplus',
-          entities: [
-            User,
-            CourseInfo,
-            CourseFeedback,
-            Review,
-            Comment,
-            Like,
-            CommentLike,
-            ReviewLike,
-            CommentDislike,
-            ReviewDislike,
-            PastExam,
-          ],
+          autoLoadEntities: true,
         } as TypeOrmModuleOptions),
       inject: [ConfigService],
     }),
@@ -66,7 +44,7 @@ import { CourseFeedback } from './course-feedback/course-feedback.entity';
     CourseModule,
     AuthModule,
     UserModule,
-    CourseInfoModule,
+    CourseFeedbackModule,
   ],
   controllers: [AppController],
   providers: [AppService],
