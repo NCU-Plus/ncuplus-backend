@@ -1,13 +1,16 @@
 import {
   Column,
   CreateDateColumn,
+  Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { CourseFeedback } from './course-feedback.entity';
+import { Reaction } from './reaction.entity';
 
-export abstract class Content {
+abstract class Content {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -28,4 +31,22 @@ export abstract class Content {
 
   @UpdateDateColumn()
   updatedAt: Date;
+}
+
+@Entity('Reviews')
+export class Review extends Content {
+  @Column('text')
+  content: string;
+
+  @OneToMany(() => Reaction, (reaction) => reaction.review, { eager: true })
+  reactions: Reaction[];
+}
+
+@Entity('Comments')
+export class Comment extends Content {
+  @Column()
+  content: string;
+
+  @OneToMany(() => Reaction, (reaction) => reaction.comment, { eager: true })
+  reactions: Reaction[];
 }

@@ -11,15 +11,17 @@ import {
   UploadedFile,
   HttpCode,
   BadRequestException,
+  Put,
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CourseFeedbackService } from './course-feedback.service';
 
-@Controller('course-feedback')
+@Controller()
 export class CourseFeedbackController {
   constructor(private readonly courseInfoService: CourseFeedbackService) {}
-  @Get(':classNo')
+  @Get('course-feedbacks/:classNo')
   async getCourseFeedback(@Param('classNo') classNo: string) {
     return {
       statusCode: 200,
@@ -28,10 +30,10 @@ export class CourseFeedbackController {
     };
   }
   @UseGuards(JwtAuthGuard)
-  @Post('comment')
+  @Post('course-feedbacks/:classNo/comments')
   async createComment(
     @Request() req,
-    @Body('classNo') classNo: string,
+    @Param('classNo') classNo: string,
     @Body('content') content: string,
   ) {
     return {
@@ -45,10 +47,10 @@ export class CourseFeedbackController {
     };
   }
   @UseGuards(JwtAuthGuard)
-  @Post('comment/edit')
-  async editComment(
+  @Put('comments/:id')
+  async updateComment(
     @Request() req,
-    @Body('commentId', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body('content') content: string,
   ) {
     return {
@@ -58,11 +60,8 @@ export class CourseFeedbackController {
     };
   }
   @UseGuards(JwtAuthGuard)
-  @Post('comment/delete')
-  async deleteComment(
-    @Request() req,
-    @Body('commentId', ParseIntPipe) id: number,
-  ) {
+  @Delete('comments/:id')
+  async deleteComment(@Request() req, @Param('id', ParseIntPipe) id: number) {
     await this.courseInfoService.deleteComment(id, req.user.id);
     return {
       statusCode: 200,
@@ -70,11 +69,8 @@ export class CourseFeedbackController {
     };
   }
   @UseGuards(JwtAuthGuard)
-  @Post('comment/like')
-  async likeComment(
-    @Request() req,
-    @Body('commentId', ParseIntPipe) id: number,
-  ) {
+  @Post('comments/:id/like')
+  async likeComment(@Request() req, @Param('id', ParseIntPipe) id: number) {
     return {
       statusCode: 200,
       message: 'OK',
@@ -82,11 +78,8 @@ export class CourseFeedbackController {
     };
   }
   @UseGuards(JwtAuthGuard)
-  @Post('comment/dislike')
-  async dislikeComment(
-    @Request() req,
-    @Body('commentId', ParseIntPipe) id: number,
-  ) {
+  @Post('comments/:id/dislike')
+  async dislikeComment(@Request() req, @Param('id', ParseIntPipe) id: number) {
     return {
       statusCode: 200,
       message: 'OK',
@@ -94,10 +87,10 @@ export class CourseFeedbackController {
     };
   }
   @UseGuards(JwtAuthGuard)
-  @Post('review')
+  @Post('course-feedbacks/:classNo/reviews')
   async createReview(
     @Request() req,
-    @Body('classNo') classNo: string,
+    @Param('classNo') classNo: string,
     @Body('content') content: string,
   ) {
     return {
@@ -111,10 +104,10 @@ export class CourseFeedbackController {
     };
   }
   @UseGuards(JwtAuthGuard)
-  @Post('review/edit')
-  async editReview(
+  @Put('reviews/:id')
+  async updateReview(
     @Request() req,
-    @Body('reviewId', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body('content') content: string,
   ) {
     return {
@@ -124,11 +117,8 @@ export class CourseFeedbackController {
     };
   }
   @UseGuards(JwtAuthGuard)
-  @Post('review/delete')
-  async deleteReview(
-    @Request() req,
-    @Body('reviewId', ParseIntPipe) id: number,
-  ) {
+  @Delete('reviews/:id')
+  async deleteReview(@Request() req, @Param('id', ParseIntPipe) id: number) {
     await this.courseInfoService.deleteReview(id, req.user.id);
     return {
       statusCode: 200,
@@ -136,8 +126,8 @@ export class CourseFeedbackController {
     };
   }
   @UseGuards(JwtAuthGuard)
-  @Post('review/like')
-  async likeReview(@Request() req, @Body('reviewId', ParseIntPipe) id: number) {
+  @Post('reviews/:id/like')
+  async likeReview(@Request() req, @Param('id', ParseIntPipe) id: number) {
     return {
       statusCode: 200,
       message: 'OK',
@@ -145,11 +135,8 @@ export class CourseFeedbackController {
     };
   }
   @UseGuards(JwtAuthGuard)
-  @Post('review/dislike')
-  async dislikeReview(
-    @Request() req,
-    @Body('reviewId', ParseIntPipe) id: number,
-  ) {
+  @Post('reviews/:id/dislike')
+  async dislikeReview(@Request() req, @Param('id', ParseIntPipe) id: number) {
     return {
       statusCode: 200,
       message: 'OK',
@@ -157,7 +144,7 @@ export class CourseFeedbackController {
     };
   }
   @HttpCode(201)
-  @Post('past-exam/upload')
+  @Post('course-feedbacks/:classNo/past-exams')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileInterceptor('file', {
@@ -184,7 +171,7 @@ export class CourseFeedbackController {
   )
   async uploadFile(
     @Request() req,
-    @Body('classNo') classNo: string,
+    @Param('classNo') classNo: string,
     @Body('year') year: string,
     @Body('description') description: string,
     @UploadedFile() file: Express.Multer.File,
@@ -203,16 +190,13 @@ export class CourseFeedbackController {
     };
   }
   @UseGuards(JwtAuthGuard)
-  @Get('past-exam/:id')
+  @Get('past-exams/:id')
   getPastExam(@Param('id', ParseIntPipe) id: number) {
     return this.courseInfoService.getPastExam(id);
   }
   @UseGuards(JwtAuthGuard)
-  @Post('past-exam/delete')
-  async deletePastExam(
-    @Request() req,
-    @Body('pastExamId', ParseIntPipe) id: number,
-  ) {
+  @Delete('past-exams/:id')
+  async deletePastExam(@Request() req, @Param('id', ParseIntPipe) id: number) {
     await this.courseInfoService.deletePastExam(id, req.user.id);
     return { statusCode: 200, message: 'OK' };
   }

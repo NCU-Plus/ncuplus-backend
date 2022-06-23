@@ -19,9 +19,11 @@ export class UserService {
     return user;
   }
   async getUser(id: number): Promise<User> {
-    return await this.userRepository.findOne(id);
+    return await this.userRepository.findOne(id, {
+      select: ['id', 'name'],
+    });
   }
-  async getUsernames(): Promise<User[]> {
+  async getUsers(): Promise<User[]> {
     const users = await this.userRepository.find({
       select: ['id', 'name'],
     });
