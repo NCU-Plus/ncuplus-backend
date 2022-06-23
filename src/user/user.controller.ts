@@ -1,43 +1,35 @@
 import {
   Controller,
   Get,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UserService } from './user.service';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Get()
-  async getUser(@Request() req) {
+  async getUsers() {
     return {
       statusCode: 200,
       message: 'OK',
-      data: await this.userService.getUser(req.user),
+      data: await this.userService.getUsers(),
     };
   }
 
-  @Get('names')
-  async getUsernames() {
+  @Get(':id')
+  async getUser(@Param('id', ParseIntPipe) id: number) {
+    const user = await this.userService.getUser(id);
+    if (!user) throw new NotFoundException(`User with id ${id} does not exist`);
     return {
       statusCode: 200,
       message: 'OK',
-      data: await this.userService.getUsernames(),
-    };
-  }
-
-  @Get('name/:id')
-  async getUsername(@Param('id', ParseIntPipe) id: number) {
-    return {
-      statusCode: 200,
-      message: 'OK',
-      data: (await this.userService.getUser(id)).name,
+      data: user,
     };
   }
 }
