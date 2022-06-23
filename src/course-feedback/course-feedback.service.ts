@@ -8,9 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { CourseService } from '../course/course.service';
 import { Repository } from 'typeorm';
-import { CourseInfo } from './course-info.entity';
-import { Comment } from './comment.entity';
-import { Review } from './review.entity';
+import { Comment, Review } from './content.entity';
 import { PastExam } from './past-exam.entity';
 import { createReadStream } from 'fs';
 import { CourseFeedback } from './course-feedback.entity';
@@ -20,8 +18,6 @@ import { Reaction, ReactionType } from './reaction.entity';
 export class CourseFeedbackService {
   constructor(
     private readonly courseService: CourseService,
-    @InjectRepository(CourseInfo)
-    private readonly courseInfoRepository: Repository<CourseInfo>,
     @InjectRepository(CourseFeedback)
     private readonly courseFeedbackRepository: Repository<CourseFeedback>,
     @InjectRepository(Comment)
@@ -33,19 +29,6 @@ export class CourseFeedbackService {
     @InjectRepository(PastExam)
     private readonly pastExamRepository: Repository<PastExam>,
   ) {}
-  async getCourseInfo(courseId: number): Promise<CourseInfo> {
-    let courseInfo = await this.courseInfoRepository.findOne(courseId);
-    if (!courseInfo) {
-      if (!(await this.courseService.getCourse(courseId))) {
-        throw new NotFoundException(`Course with ID ${courseId} not found`);
-      }
-      this.courseService.getCourse(courseId);
-      courseInfo = new CourseInfo();
-      courseInfo.courseId = courseId;
-      await this.courseInfoRepository.save(courseInfo);
-    }
-    return courseInfo;
-  }
   async getCourseFeedback(classNo: string): Promise<CourseFeedback> {
     let courseFeedback = await this.courseFeedbackRepository.findOne(classNo, {
       select: ['classNo', 'comments', 'reviews', 'pastExams'],
@@ -60,10 +43,6 @@ export class CourseFeedbackService {
       courseFeedback.reviews = [];
       courseFeedback.comments = [];
       courseFeedback.pastExams = [];
-      const courseInfos: CourseInfo[] = [];
-      for (const course of courses)
-        courseInfos.push(await this.getCourseInfo(course.id));
-      courseFeedback.courseInfos = courseInfos;
       await this.courseFeedbackRepository.save(courseFeedback);
     }
     courseFeedback.pastExams = await this.getPastExams(courseFeedback);

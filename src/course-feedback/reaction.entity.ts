@@ -6,8 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Comment } from './comment.entity';
-import { Review } from './review.entity';
+import { Comment, Review } from './content.entity';
 
 export enum ReactionType {
   LIKE = 0,
