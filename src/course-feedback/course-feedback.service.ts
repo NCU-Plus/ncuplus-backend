@@ -94,32 +94,38 @@ export class CourseFeedbackService {
       throw new ForbiddenException('You are not the author of this comment');
     await this.commentRepository.delete(commentId);
   }
-  async likeComment(commentId: number, userId: number) {
-    const comment = await this.commentRepository.findOne(commentId);
-    await this.checkLikeCondition(comment, commentId, userId);
+  async reactToComment(
+    commentId: number,
+    authorId: number,
+    type: ReactionType,
+  ) {
+    return await this.reactToContent('comment', commentId, authorId, type);
+  }
+  private async reactToContent(
+    target: 'comment' | 'review',
+    id: number,
+    authorId: number,
+    type: ReactionType,
+  ) {
+    const content =
+      target === 'comment'
+        ? await this.commentRepository.findOne(id)
+        : await this.reviewRepository.findOne(id);
+    if (!content)
+      throw new NotFoundException(`${target} with ID ${id} not found`);
 
+    await this.checkLikeCondition(content, id, authorId);
     const saved = await this.reactionRepository.save(
       this.reactionRepository.create({
-        comment: comment,
-        authorId: userId,
-        type: ReactionType.LIKE,
+        comment: target === 'comment' ? content : null,
+        review: target === 'review' ? content : null,
+        authorId,
+        type,
       }),
     );
     return { id: saved.id, authorId: saved.authorId };
   }
-  async dislikeComment(commentId: number, userId: number) {
-    const comment = await this.commentRepository.findOne(commentId);
-    await this.checkLikeCondition(comment, commentId, userId);
 
-    const saved = await this.reactionRepository.save(
-      this.reactionRepository.create({
-        comment: comment,
-        authorId: userId,
-        type: ReactionType.DISLIKE,
-      }),
-    );
-    return { id: saved.id, authorId: saved.authorId };
-  }
   async createReview(
     classNo: string,
     authorId: number,
@@ -157,17 +163,8 @@ export class CourseFeedbackService {
       throw new ForbiddenException('You are not the author of this comment');
     await this.reviewRepository.delete(commentId);
   }
-  async likeReview(reviewId: number, userId: number): Promise<Reaction> {
-    const review = await this.reviewRepository.findOne(reviewId);
-    await this.checkLikeCondition(review, reviewId, userId);
-
-    return await this.reactionRepository.save(
-      this.reactionRepository.create({
-        review: review,
-        authorId: userId,
-        type: ReactionType.LIKE,
-      }),
-    );
+  async reactToReview(reviewId: number, authorId: number, type: ReactionType) {
+    return await this.reactToContent('review', reviewId, authorId, type);
   }
   async dislikeReview(reviewId: number, userId: number): Promise<Reaction> {
     const review = await this.reviewRepository.findOne(reviewId);
@@ -244,7 +241,9 @@ export class CourseFeedbackService {
     );
 
     return new StreamableFile(createReadStream(pastExam.path), {
-      disposition: `attachment; filename=${pastExam.originFilename}`,
+      disposition: `attachment; filename=${encodeURIComponent(
+        pastExam.originFilename,
+      )}`,
     });
   }
   async deletePastExam(pastExamId: number, userId: number) {
