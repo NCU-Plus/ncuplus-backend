@@ -1,4 +1,12 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { User } from 'src/user/user.entity';
 import { AuthService } from './auth.service';
@@ -26,6 +34,17 @@ export class AuthController {
       statusCode: 200,
       message: 'OK',
       data: { token: await this.authService.getJwtToken(req.user as User) },
+    };
+  }
+
+  @UseGuards(LoginGuard)
+  @Post('logout')
+  @HttpCode(200)
+  async logout(@Req() req: Request) {
+    req.logout();
+    return {
+      statusCode: 200,
+      message: 'OK',
     };
   }
 }
