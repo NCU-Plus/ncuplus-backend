@@ -13,10 +13,12 @@ import {
   BadRequestException,
   Put,
   Delete,
+  ParseEnumPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CourseFeedbackService } from './course-feedback.service';
+import { ReactionType } from './reaction.entity';
 
 @Controller()
 export class CourseFeedbackController {
@@ -69,21 +71,16 @@ export class CourseFeedbackController {
     };
   }
   @UseGuards(JwtAuthGuard)
-  @Post('comments/:id/like')
-  async likeComment(@Request() req, @Param('id', ParseIntPipe) id: number) {
+  @Post('comments/:id/reactions')
+  async reactToComment(
+    @Request() req,
+    @Param('id', ParseIntPipe) id: number,
+    @Body('type', new ParseEnumPipe(ReactionType)) type: ReactionType,
+  ) {
     return {
       statusCode: 200,
       message: 'OK',
-      data: await this.courseInfoService.likeComment(id, req.user.id),
-    };
-  }
-  @UseGuards(JwtAuthGuard)
-  @Post('comments/:id/dislike')
-  async dislikeComment(@Request() req, @Param('id', ParseIntPipe) id: number) {
-    return {
-      statusCode: 200,
-      message: 'OK',
-      data: await this.courseInfoService.dislikeComment(id, req.user.id),
+      data: await this.courseInfoService.reactToComment(id, req.user.id, type),
     };
   }
   @UseGuards(JwtAuthGuard)
@@ -126,21 +123,16 @@ export class CourseFeedbackController {
     };
   }
   @UseGuards(JwtAuthGuard)
-  @Post('reviews/:id/like')
-  async likeReview(@Request() req, @Param('id', ParseIntPipe) id: number) {
+  @Post('reviews/:id/reactions')
+  async reactToReview(
+    @Request() req,
+    @Param('id', ParseIntPipe) id: number,
+    @Body('type', new ParseEnumPipe(ReactionType)) type: ReactionType,
+  ) {
     return {
       statusCode: 200,
       message: 'OK',
-      data: await this.courseInfoService.likeReview(id, req.user.id),
-    };
-  }
-  @UseGuards(JwtAuthGuard)
-  @Post('reviews/:id/dislike')
-  async dislikeReview(@Request() req, @Param('id', ParseIntPipe) id: number) {
-    return {
-      statusCode: 200,
-      message: 'OK',
-      data: await this.courseInfoService.dislikeReview(id, req.user.id),
+      data: await this.courseInfoService.reactToReview(id, req.user.id, type),
     };
   }
   @HttpCode(201)
@@ -191,8 +183,8 @@ export class CourseFeedbackController {
   }
   @UseGuards(JwtAuthGuard)
   @Get('past-exams/:id')
-  getPastExam(@Param('id', ParseIntPipe) id: number) {
-    return this.courseInfoService.getPastExam(id);
+  async getPastExam(@Param('id', ParseIntPipe) id: number) {
+    return await this.courseInfoService.getPastExam(id);
   }
   @UseGuards(JwtAuthGuard)
   @Delete('past-exams/:id')
