@@ -38,18 +38,19 @@ export class CourseFeedbackService {
       if (courses.length === 0) {
         throw new NotFoundException(`Course with classNo ${classNo} not found`);
       }
-      courseFeedback = new CourseFeedback();
-      courseFeedback.classNo = classNo;
-      courseFeedback.reviews = [];
-      courseFeedback.comments = [];
-      courseFeedback.pastExams = [];
+      courseFeedback = this.courseFeedbackRepository.create({
+        classNo: classNo,
+        reviews: [],
+        comments: [],
+        pastExams: [],
+      });
       await this.courseFeedbackRepository.save(courseFeedback);
     }
     courseFeedback.pastExams = await this.getPastExams(courseFeedback);
     return courseFeedback;
   }
   async createComment(classNo: string, authorId: number, content: string) {
-    if (content === '')
+    if (content.length === 0)
       throw new BadRequestException('Comment cannot be empty');
     const courseFeedback = await this.getCourseFeedback(classNo);
     if (!courseFeedback)
@@ -58,33 +59,20 @@ export class CourseFeedbackService {
       authorId: authorId,
       content: content,
       courseFeedback: courseFeedback,
+      reactions: [],
     });
-    const saved = await this.commentRepository.save(comment);
-    return {
-      id: saved.id,
-      content: saved.content,
-      authorId: saved.authorId,
-      reactions: saved.reactions,
-      createdAt: saved.createdAt,
-      updatedAt: saved.updatedAt,
-    };
+    return await this.commentRepository.save(comment);
   }
   async editComment(commentId: number, userId: number, content: string) {
+    if (content.length === 0)
+      throw new BadRequestException('Comment cannot be empty');
     const comment = await this.commentRepository.findOne(commentId);
     if (!comment)
       throw new NotFoundException(`Comment with ID ${commentId} not found`);
     if (comment.authorId !== userId)
       throw new ForbiddenException('You are not the author of this comment');
     comment.content = content;
-    const saved = await this.commentRepository.save(comment);
-    return {
-      id: saved.id,
-      content: saved.content,
-      authorId: saved.authorId,
-      reactions: saved.reactions,
-      createdAt: saved.createdAt,
-      updatedAt: saved.updatedAt,
-    };
+    return await this.commentRepository.save(comment);
   }
   async deleteComment(commentId: number, userId: number): Promise<void> {
     const comment = await this.commentRepository.findOne(commentId);
@@ -115,7 +103,7 @@ export class CourseFeedbackService {
       throw new NotFoundException(`${target} with ID ${id} not found`);
 
     await this.checkLikeCondition(content, id, authorId);
-    const saved = await this.reactionRepository.save(
+    return await this.reactionRepository.save(
       this.reactionRepository.create({
         comment: target === 'comment' ? content : null,
         review: target === 'review' ? content : null,
@@ -123,7 +111,6 @@ export class CourseFeedbackService {
         type,
       }),
     );
-    return { id: saved.id, authorId: saved.authorId };
   }
 
   async createReview(
@@ -131,7 +118,8 @@ export class CourseFeedbackService {
     authorId: number,
     content: string,
   ): Promise<Review> {
-    if (content === '') throw new BadRequestException('Review cannot be empty');
+    if (content.length === 0)
+      throw new BadRequestException('Review cannot be empty');
     const courseFeedback = await this.getCourseFeedback(classNo);
     if (!courseFeedback)
       throw new NotFoundException(`Course with classNo ${classNo} not found`);
@@ -139,6 +127,7 @@ export class CourseFeedbackService {
       authorId: authorId,
       content: content,
       courseFeedback: courseFeedback,
+      reactions: [],
     });
     return await this.reviewRepository.save(review);
   }
@@ -147,6 +136,8 @@ export class CourseFeedbackService {
     userId: number,
     content: string,
   ): Promise<Review> {
+    if (content.length === 0)
+      throw new BadRequestException('Review cannot be empty');
     const review = await this.reviewRepository.findOne(commentId);
     if (!review)
       throw new NotFoundException(`Review with ID ${commentId} not found`);
@@ -202,7 +193,7 @@ export class CourseFeedbackService {
     description: string,
     file: Express.Multer.File,
   ) {
-    const saved = await this.pastExamRepository.save(
+    return await this.pastExamRepository.save(
       this.pastExamRepository.create({
         uploaderId: uploaderId,
         year: year,
@@ -214,17 +205,6 @@ export class CourseFeedbackService {
         courseFeedback: await this.getCourseFeedback(classNo),
       }),
     );
-    return {
-      id: saved.id,
-      year: saved.year,
-      description: saved.description,
-      originFilename: saved.originFilename,
-      size: saved.size,
-      downloadCount: saved.downloadCount,
-      uploaderId: saved.uploaderId,
-      createdAt: saved.createdAt,
-      updatedAt: saved.updatedAt,
-    };
   }
   async getPastExam(pastExamId: number) {
     const pastExam = await this.pastExamRepository.findOne(pastExamId, {
