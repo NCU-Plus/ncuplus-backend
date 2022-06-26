@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { Profile } from './profile.entity';
 import { User } from './user.entity';
 
@@ -44,5 +45,14 @@ export class UserService {
       studentId: studentId,
     });
     return await this.userRepository.save(user);
+  }
+  async updateProfile(
+    userId: number,
+    profile: UpdateProfileDto,
+  ): Promise<Profile> {
+    const user = await this.userRepository.findOne(userId);
+    user.profile = { ...user.profile, ...profile };
+    const saved = await this.userRepository.save(user);
+    return saved.profile;
   }
 }
