@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Profile } from './profile.entity';
 import { User } from './user.entity';
 
 @Injectable()
@@ -11,7 +12,7 @@ export class UserService {
   ) {}
   async getUserByPortalId(protalId: number): Promise<User> {
     const user = await this.userRepository.findOne({
-      select: ['id', 'portalId', 'identifier', 'name'],
+      select: ['id', 'portalId', 'identifier'],
       where: {
         portalId: protalId,
       },
@@ -20,12 +21,12 @@ export class UserService {
   }
   async getUser(id: number): Promise<User> {
     return await this.userRepository.findOne(id, {
-      select: ['id', 'name'],
+      select: ['id'],
     });
   }
   async getUsers(): Promise<User[]> {
     const users = await this.userRepository.find({
-      select: ['id', 'name'],
+      select: ['id'],
     });
     return users;
   }
@@ -34,10 +35,12 @@ export class UserService {
     identifier: string,
     studentId: string,
   ): Promise<User> {
+    const profile = new Profile();
+    profile.name = studentId;
     const user = this.userRepository.create({
       portalId: portalId,
       identifier: identifier,
-      name: studentId,
+      profile,
       studentId: studentId,
     });
     return await this.userRepository.save(user);
