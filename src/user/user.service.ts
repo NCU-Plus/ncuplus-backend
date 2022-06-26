@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { Profile } from './profile.entity';
-import { User } from './user.entity';
+import { User, UserRole } from './user.entity';
 
 @Injectable()
 export class UserService {
@@ -22,12 +22,12 @@ export class UserService {
   }
   async getUser(id: number): Promise<User> {
     return await this.userRepository.findOne(id, {
-      select: ['id'],
+      select: ['id', 'role'],
     });
   }
   async getUsers(): Promise<User[]> {
     const users = await this.userRepository.find({
-      select: ['id'],
+      select: ['id', 'role'],
     });
     return users;
   }
@@ -43,6 +43,7 @@ export class UserService {
       identifier: identifier,
       profile,
       studentId: studentId,
+      role: UserRole.STUDENT,
     });
     return await this.userRepository.save(user);
   }

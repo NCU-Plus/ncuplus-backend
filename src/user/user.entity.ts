@@ -9,6 +9,12 @@ import {
 } from 'typeorm';
 import { Profile } from './profile.entity';
 
+export enum UserRole {
+  STUDENT = 0,
+  TEACHER = 1,
+  ADMIN = 2,
+}
+
 @Entity('Users')
 export class User {
   @PrimaryGeneratedColumn()
@@ -22,6 +28,9 @@ export class User {
 
   @Column()
   studentId: string;
+
+  @Column('tinyint')
+  role: UserRole;
 
   @OneToOne(() => Profile, { cascade: true, eager: true })
   @JoinColumn()
