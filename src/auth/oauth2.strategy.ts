@@ -1,6 +1,6 @@
 import { Strategy } from 'passport-oauth2';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from '../user/user.service';
 import { PortalUser } from './dtos/portal-user.dto';
@@ -46,6 +46,8 @@ export class OAuth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
   ) {
     let user = await this.userService.getUserByPortalId(profile.id);
     if (!user) {
+      if (!(profile.id && profile.identifier && profile.studentId))
+        throw new BadRequestException('Missing required fields');
       user = await this.userService.createUser(
         profile.id,
         profile.identifier,
