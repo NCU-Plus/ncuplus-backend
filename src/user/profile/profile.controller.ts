@@ -23,7 +23,7 @@ export class ProfileController {
   @Put(':id')
   async updateProfile(
     @Param('id', ParseIntPipe) id: number,
-    @Body('profile', new ValidationPipe({ transform: true }))
+    @Body(new ValidationPipe({ transform: true }))
     profile: UpdateProfileDto,
   ) {
     return {
