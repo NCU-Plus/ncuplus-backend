@@ -2,17 +2,16 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Profile } from './profile.entity';
+import { Profile } from './profile/profile.entity';
 
 export enum UserRole {
-  STUDENT = 0,
-  TEACHER = 1,
-  ADMIN = 2,
+  STUDENT = 'student',
+  TEACHER = 'teacher',
+  ADMIN = 'admin',
 }
 
 @Entity('Users')
@@ -29,11 +28,12 @@ export class User {
   @Column()
   studentId: string;
 
-  @Column('tinyint')
-  role: UserRole;
+  @Column('json')
+  roles: UserRole[];
 
-  @OneToOne(() => Profile, { cascade: true, eager: true })
-  @JoinColumn()
+  @OneToOne(() => Profile, (profile) => profile.user, {
+    eager: true,
+  })
   profile: Profile;
 
   @CreateDateColumn()

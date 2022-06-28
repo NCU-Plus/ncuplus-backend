@@ -13,6 +13,8 @@ import { CollegeModule } from './college/college.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { CourseFeedbackModule } from './course-feedback/course-feedback.module';
+import { CaslModule } from 'nest-casl';
+import { UserRole } from './user/user.entity';
 
 @Module({
   imports: [
@@ -45,6 +47,9 @@ import { CourseFeedbackModule } from './course-feedback/course-feedback.module';
     AuthModule,
     UserModule,
     CourseFeedbackModule,
+    CaslModule.forRoot<UserRole>({
+      superuserRole: UserRole.ADMIN,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

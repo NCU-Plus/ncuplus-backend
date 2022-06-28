@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UpdateProfileDto } from './dtos/update-profile.dto';
-import { Profile } from './profile.entity';
+import { ProfileService } from './profile/profile.service';
 import { User, UserRole } from './user.entity';
 
 @Injectable()
@@ -10,6 +9,7 @@ export class UserService {
   constructor(
     @InjectRepository(User, 'default')
     private userRepository: Repository<User>,
+    private profileService: ProfileService,
   ) {}
   async getUserByPortalId(protalId: number): Promise<User> {
     const user = await this.userRepository.findOne({
@@ -22,12 +22,12 @@ export class UserService {
   }
   async getUser(id: number): Promise<User> {
     return await this.userRepository.findOne(id, {
-      select: ['id', 'role'],
+      select: ['id', 'roles'],
     });
   }
   async getUsers(): Promise<User[]> {
     const users = await this.userRepository.find({
-      select: ['id', 'role'],
+      select: ['id', 'roles'],
     });
     return users;
   }
@@ -36,24 +36,18 @@ export class UserService {
     identifier: string,
     studentId: string,
   ): Promise<User> {
-    const profile = new Profile();
-    profile.name = studentId;
-    const user = this.userRepository.create({
-      portalId: portalId,
-      identifier: identifier,
-      profile,
-      studentId: studentId,
-      role: UserRole.STUDENT,
-    });
-    return await this.userRepository.save(user);
-  }
-  async updateProfile(
-    userId: number,
-    profile: UpdateProfileDto,
-  ): Promise<Profile> {
-    const user = await this.userRepository.findOne(userId);
-    user.profile = { ...user.profile, ...profile };
-    const saved = await this.userRepository.save(user);
-    return saved.profile;
+    const user = await this.userRepository.save(
+      this.userRepository.create({
+        portalId: portalId,
+        identifier: identifier,
+        studentId: studentId,
+        roles: [UserRole.STUDENT],
+      }),
+    );
+    user.profile = await this.profileService.createProfile(
+      { name: studentId },
+      user,
+    );
+    return user;
   }
 }
