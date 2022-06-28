@@ -46,7 +46,7 @@ export class UserService {
     );
     user.profile = await this.profileService.createProfile(
       { name: studentId },
-      user,
+      user.id,
     );
     return user;
   }

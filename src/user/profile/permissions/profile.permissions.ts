@@ -10,7 +10,7 @@ export const permissions: Permissions<UserRole, Subjects, Actions> = {
     can(Actions.read, Profile);
     // https://github.com/getjerry/nest-casl/pull/222
     can(Actions.update, Profile, {
-      userId: user.id as unknown as number,
+      user: user.id as unknown as number,
     });
   },
 };
