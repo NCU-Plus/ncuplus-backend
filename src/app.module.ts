@@ -15,6 +15,7 @@ import { UserModule } from './user/user.module';
 import { CourseFeedbackModule } from './course-feedback/course-feedback.module';
 import { CaslModule } from 'nest-casl';
 import { UserRole } from './user/user.entity';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { UserRole } from './user/user.entity';
     CourseModule,
     AuthModule,
     UserModule,
+    ReportModule,
     CourseFeedbackModule,
     CaslModule.forRoot<UserRole>({
       superuserRole: UserRole.ADMIN,
