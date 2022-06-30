@@ -2,7 +2,7 @@ import { subject } from '@casl/ability';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AccessService, Actions } from 'nest-casl';
-import { User } from 'src/user/user.entity';
+import { User } from '../user/user.entity';
 import { Repository } from 'typeorm';
 import { CreateReportDto } from './dtos/create-report.dto';
 import { UpdateReportDto } from './dtos/update-report.dto';

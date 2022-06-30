@@ -1,5 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { AccessService, CaslModule } from 'nest-casl';
+import { AbilityFactory } from 'nest-casl/dist/factories/ability.factory';
+import { permissions } from './permissions/report.permissions';
 import { ReportController } from './report.controller';
+import { Report } from './report.entity';
 import { ReportService } from './report.service';
 
 describe('ReportController', () => {
@@ -7,8 +12,15 @@ describe('ReportController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslModule.forFeature({ permissions })],
       controllers: [ReportController],
-      providers: [ReportService],
+      providers: [
+        ReportService,
+        {
+          provide: getRepositoryToken(Report),
+          useValue: {},
+        },
+      ],
     }).compile();
 
     controller = module.get<ReportController>(ReportController);

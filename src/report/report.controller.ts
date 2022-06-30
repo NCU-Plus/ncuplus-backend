@@ -16,7 +16,7 @@ import { ReportService } from './report.service';
 import { CreateReportDto } from './dtos/create-report.dto';
 import { UpdateReportDto } from './dtos/update-report.dto';
 import { Request } from 'express';
-import { User } from 'src/user/user.entity';
+import { User } from '../user/user.entity';
 import {
   AccessGuard,
   AccessService,
@@ -25,7 +25,7 @@ import {
   UseAbility,
 } from 'nest-casl';
 import { Report } from './report.entity';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ReportHook } from './hooks/report.hook';
 
 @Controller('reports')
