@@ -1,0 +1,7 @@
+name: Run Tests
+
+on:
+  pull_request:
+jobs:
+  test:
+    uses: ./.github/workflows/test
