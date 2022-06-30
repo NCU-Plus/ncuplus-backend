@@ -12,7 +12,6 @@ describe('ReportService', () => {
   let reportRepository: Repository<Report>;
 
   const REPORT_REPOSITORY_TOKEN = getRepositoryToken(Report);
-  console.log(REPORT_REPOSITORY_TOKEN);
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslModule.forFeature({ permissions })],
