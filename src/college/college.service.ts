@@ -5,7 +5,7 @@ import { College } from './college.entity';
 @Injectable()
 export class CollegeService {
   constructor(
-    @InjectRepository(College, 'coursesConnection')
+    @InjectRepository(College)
     private collegeRepository: Repository<College>,
   ) {}
   async getColleges(): Promise<College[]> {

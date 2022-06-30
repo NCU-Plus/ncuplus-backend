@@ -5,7 +5,7 @@ import { Course } from './course.entity';
 import { CourseService } from './course.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Course], 'coursesConnection')],
+  imports: [TypeOrmModule.forFeature([Course])],
   controllers: [CourseController],
   exports: [CourseService],
   providers: [CourseService],

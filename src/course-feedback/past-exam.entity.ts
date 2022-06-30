@@ -37,7 +37,11 @@ export class PastExam {
   @Column()
   uploaderId: number;
 
-  @ManyToOne(() => CourseFeedback, (courseFeedback) => courseFeedback.pastExams)
+  @ManyToOne(
+    () => CourseFeedback,
+    (courseFeedback) => courseFeedback.pastExams,
+    { onDelete: 'CASCADE' },
+  )
   courseFeedback: CourseFeedback;
 
   @CreateDateColumn()

@@ -8,7 +8,7 @@ import { Profile } from './profile.entity';
 @Injectable()
 export class ProfileService {
   constructor(
-    @InjectRepository(Profile, 'default')
+    @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
   ) {}
 

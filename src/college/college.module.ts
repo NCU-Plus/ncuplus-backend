@@ -5,7 +5,7 @@ import { CollegeService } from './college.service';
 import { CollegeController } from './college.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([College], 'coursesConnection')],
+  imports: [TypeOrmModule.forFeature([College])],
   controllers: [CollegeController],
   providers: [CollegeService],
 })
