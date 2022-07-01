@@ -8,6 +8,7 @@ export const config = {
     password: process.env.DB_PASSWORD || 'password',
     database: process.env.DB_NAME || 'dbname',
     charset: 'utf8mb4',
+    timezone: process.env.DB_TIMEZONE || 'local',
     extra: {
       connectionLimit: 10,
     },
