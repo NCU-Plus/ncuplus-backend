@@ -82,6 +82,7 @@ export class PastExam1656603635804 implements MigrationInterface {
         ],
       }),
     );
+    await queryRunner.query('ALTER TABLE PastExams CHARACTER SET utf8mb4');
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

@@ -67,6 +67,7 @@ export class Report1656603667128 implements MigrationInterface {
         ],
       }),
     );
+    await queryRunner.query('ALTER TABLE Reports CHARACTER SET utf8mb4');
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

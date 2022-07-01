@@ -48,6 +48,7 @@ export class User1656603566900 implements MigrationInterface {
         ],
       }),
     );
+    await queryRunner.query('ALTER TABLE Users CHARACTER SET utf8mb4');
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

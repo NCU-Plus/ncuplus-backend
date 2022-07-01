@@ -62,6 +62,7 @@ export class Reaction1656603642324 implements MigrationInterface {
         ],
       }),
     );
+    await queryRunner.query('ALTER TABLE Reactions CHARACTER SET utf8mb4');
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

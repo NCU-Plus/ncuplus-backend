@@ -27,6 +27,9 @@ export class CourseFeedback1656603580657 implements MigrationInterface {
         ],
       }),
     );
+    await queryRunner.query(
+      'ALTER TABLE CourseFeedbacks CHARACTER SET utf8mb4',
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

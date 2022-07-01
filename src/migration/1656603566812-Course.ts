@@ -103,6 +103,7 @@ export class Course1656603566812 implements MigrationInterface {
         ],
       }),
     );
+    await queryRunner.query('ALTER TABLE Courses CHARACTER SET utf8mb4');
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

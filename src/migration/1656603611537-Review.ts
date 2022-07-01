@@ -51,6 +51,7 @@ export class Review1656603611537 implements MigrationInterface {
         ],
       }),
     );
+    await queryRunner.query('ALTER TABLE Reviews CHARACTER SET utf8mb4');
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
