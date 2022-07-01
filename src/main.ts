@@ -5,6 +5,7 @@ import * as connectRedis from 'connect-redis';
 import helmet from 'helmet';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import * as cookieParser from 'cookie-parser';
 import { exit } from 'process';
 import { Logger } from '@nestjs/common';
 
@@ -30,6 +31,7 @@ async function bootstrap() {
       exit(1);
     }
   }
+  app.use(cookieParser());
   app.use(session(sessionOptions));
   app.use(passport.initialize());
   app.use(passport.session());

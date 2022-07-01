@@ -10,6 +10,7 @@ import {
 import { Request, Response } from 'express';
 import { User } from 'src/user/user.entity';
 import { AuthService } from './auth.service';
+import { CsrfGuard } from './csrf.guard';
 import { LoginGuard } from './login.guard';
 import { OAuth2AuthGuard } from './oauth2-auth.guard';
 
@@ -27,7 +28,7 @@ export class AuthController {
     res.redirect('/');
   }
 
-  @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard, CsrfGuard)
   @Get('token')
   async token(@Req() req: Request) {
     return {
@@ -37,7 +38,7 @@ export class AuthController {
     };
   }
 
-  @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard, CsrfGuard)
   @Post('logout')
   @HttpCode(200)
   async logout(@Req() req: Request) {
