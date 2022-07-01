@@ -38,7 +38,6 @@ export class Department1656603556780 implements MigrationInterface {
         ],
       }),
     );
-    await queryRunner.query('ALTER TABLE Departments CHARACTER SET utf8mb4');
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

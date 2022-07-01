@@ -32,7 +32,6 @@ export class College1656603556768 implements MigrationInterface {
         ],
       }),
     );
-    await queryRunner.query('ALTER TABLE Colleges CHARACTER SET utf8mb4');
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

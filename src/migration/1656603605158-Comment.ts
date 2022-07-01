@@ -51,7 +51,6 @@ export class Comment1656603605158 implements MigrationInterface {
         ],
       }),
     );
-    await queryRunner.query('ALTER TABLE Comments CHARACTER SET utf8mb4');
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

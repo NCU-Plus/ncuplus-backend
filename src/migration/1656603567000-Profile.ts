@@ -45,7 +45,6 @@ export class Profile1656603567000 implements MigrationInterface {
         ],
       }),
     );
-    await queryRunner.query('ALTER TABLE Profiles CHARACTER SET utf8mb4');
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
