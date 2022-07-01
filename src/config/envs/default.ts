@@ -7,6 +7,7 @@ export const config = {
     username: process.env.DB_USER || 'username',
     password: process.env.DB_PASSWORD || 'password',
     database: process.env.DB_NAME || 'dbname',
+    charset: 'utf8mb4',
     extra: {
       connectionLimit: 10,
     },
