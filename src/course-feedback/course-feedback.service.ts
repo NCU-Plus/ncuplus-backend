@@ -29,6 +29,7 @@ export class CourseFeedbackService {
     @InjectRepository(PastExam)
     private readonly pastExamRepository: Repository<PastExam>,
   ) {}
+
   async getCourseFeedback(classNo: string): Promise<CourseFeedback> {
     let courseFeedback = await this.courseFeedbackRepository.findOne(classNo, {
       select: ['classNo', 'comments', 'reviews', 'pastExams'],
@@ -49,6 +50,7 @@ export class CourseFeedbackService {
     courseFeedback.pastExams = await this.getPastExams(courseFeedback);
     return courseFeedback;
   }
+
   async createComment(classNo: string, authorId: number, content: string) {
     if (content.length === 0)
       throw new BadRequestException('Comment cannot be empty');
@@ -63,25 +65,26 @@ export class CourseFeedbackService {
     });
     return await this.commentRepository.save(comment);
   }
-  async editComment(commentId: number, userId: number, content: string) {
+
+  async editComment(commentId: number, content: string) {
     if (content.length === 0)
       throw new BadRequestException('Comment cannot be empty');
-    const comment = await this.commentRepository.findOne(commentId);
-    if (!comment)
-      throw new NotFoundException(`Comment with ID ${commentId} not found`);
-    if (comment.authorId !== userId)
-      throw new ForbiddenException('You are not the author of this comment');
+    const comment = await this.findOneComment(commentId);
     comment.content = content;
     return await this.commentRepository.save(comment);
   }
-  async deleteComment(commentId: number, userId: number): Promise<void> {
+
+  async findOneComment(commentId: number) {
     const comment = await this.commentRepository.findOne(commentId);
     if (!comment)
       throw new NotFoundException(`Comment with ID ${commentId} not found`);
-    if (comment.authorId !== userId)
-      throw new ForbiddenException('You are not the author of this comment');
+    return comment;
+  }
+
+  async deleteComment(commentId: number): Promise<void> {
     await this.commentRepository.delete(commentId);
   }
+
   async reactToComment(
     commentId: number,
     authorId: number,
@@ -131,34 +134,32 @@ export class CourseFeedbackService {
     });
     return await this.reviewRepository.save(review);
   }
-  async editReview(
-    commentId: number,
-    userId: number,
-    content: string,
-  ): Promise<Review> {
+
+  async editReview(commentId: number, content: string): Promise<Review> {
     if (content.length === 0)
       throw new BadRequestException('Review cannot be empty');
-    const review = await this.reviewRepository.findOne(commentId);
-    if (!review)
-      throw new NotFoundException(`Review with ID ${commentId} not found`);
-    if (review.authorId !== userId)
-      throw new ForbiddenException('You are not the author of this comment');
+    const review = await this.findOneReview(commentId);
     review.content = content;
     return await this.reviewRepository.save(review);
   }
-  async deleteReview(commentId: number, userId: number): Promise<void> {
+
+  async findOneReview(commentId: number) {
     const review = await this.reviewRepository.findOne(commentId);
     if (!review)
       throw new NotFoundException(`Review with ID ${commentId} not found`);
-    if (review.authorId !== userId)
-      throw new ForbiddenException('You are not the author of this comment');
-    await this.reviewRepository.delete(commentId);
+    return review;
   }
+
+  async deleteReview(reviewId: number): Promise<void> {
+    await this.reviewRepository.delete(reviewId);
+  }
+
   async reactToReview(reviewId: number, authorId: number, type: ReactionType) {
     return await this.reactToContent('review', reviewId, authorId, type);
   }
+
   async dislikeReview(reviewId: number, userId: number): Promise<Reaction> {
-    const review = await this.reviewRepository.findOne(reviewId);
+    const review = await this.findOneReview(reviewId);
     await this.checkLikeCondition(review, reviewId, userId);
 
     return await this.reactionRepository.save(
@@ -169,6 +170,7 @@ export class CourseFeedbackService {
       }),
     );
   }
+
   async getPastExams(courseFeedback: CourseFeedback) {
     const pastExams = await this.pastExamRepository.find({
       select: [
@@ -186,6 +188,7 @@ export class CourseFeedbackService {
     });
     return pastExams;
   }
+
   async uploadPastExam(
     classNo: string,
     uploaderId: number,
@@ -206,13 +209,16 @@ export class CourseFeedbackService {
       }),
     );
   }
+
+  async findOnePastExam(id: number) {
+    const pastExam = await this.pastExamRepository.findOne(id);
+    if (!pastExam)
+      throw new NotFoundException(`PastExam with ID ${id} not found`);
+    return pastExam;
+  }
+
   async getPastExam(pastExamId: number) {
-    const pastExam = await this.pastExamRepository.findOne(pastExamId, {
-      select: ['path', 'originFilename'],
-    });
-    if (!pastExam) {
-      throw new NotFoundException(`Past Exam with ID ${pastExamId} not found`);
-    }
+    const pastExam = await this.findOnePastExam(pastExamId);
 
     await this.pastExamRepository.increment(
       { id: pastExamId },
@@ -226,14 +232,11 @@ export class CourseFeedbackService {
       )}`,
     });
   }
-  async deletePastExam(pastExamId: number, userId: number) {
-    const pastExam = await this.pastExamRepository.findOne(pastExamId);
-    if (!pastExam)
-      throw new NotFoundException(`Past Exam with ID ${pastExamId} not found`);
-    if (pastExam.uploaderId !== userId)
-      throw new ForbiddenException('You are not the uploader of this file');
+
+  async deletePastExam(pastExamId: number) {
     await this.pastExamRepository.delete(pastExamId);
   }
+
   private async checkLikeCondition(
     target: Comment | Review,
     commentId: number,

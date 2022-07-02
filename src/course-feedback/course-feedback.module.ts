@@ -7,6 +7,8 @@ import { Comment, Review } from './content.entity';
 import { PastExam } from './past-exam.entity';
 import { CourseFeedback } from './course-feedback.entity';
 import { Reaction } from './reaction.entity';
+import { CaslModule } from 'nest-casl';
+import { permissions } from './permissions/course-feedback.permissions';
 
 @Module({
   imports: [
@@ -17,6 +19,7 @@ import { Reaction } from './reaction.entity';
       Reaction,
       PastExam,
     ]),
+    CaslModule.forFeature({ permissions }),
     CourseModule,
   ],
   providers: [CourseFeedbackService],
