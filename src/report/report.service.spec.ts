@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { AccessService, CaslModule } from 'nest-casl';
-import { AbilityFactory } from 'nest-casl/dist/factories/ability.factory';
+import { CaslModule } from 'nest-casl';
 import { Repository } from 'typeorm';
 import { permissions } from './permissions/report.permissions';
 import { Report } from './report.entity';
@@ -29,5 +28,9 @@ describe('ReportService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  it('should be defined', () => {
+    expect(reportRepository).toBeDefined();
   });
 });

@@ -1,7 +1,7 @@
 import { Actions, Permissions } from 'nest-casl';
 import { InferSubjects } from '@casl/ability';
 import { Profile } from '../profile.entity';
-import { UserRole, User } from 'src/user/user.entity';
+import { UserRole } from 'src/user/user.entity';
 
 export type Subjects = InferSubjects<typeof Profile>;
 

@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { AccessService, CaslModule } from 'nest-casl';
-import { AbilityFactory } from 'nest-casl/dist/factories/ability.factory';
+import { CaslModule } from 'nest-casl';
 import { permissions } from './permissions/report.permissions';
 import { ReportController } from './report.controller';
 import { Report } from './report.entity';

@@ -36,7 +36,7 @@ export class Report {
   targetId: number;
 
   @Column()
-  resolved: boolean = false;
+  resolved = false;
 
   @Column()
   description: string;

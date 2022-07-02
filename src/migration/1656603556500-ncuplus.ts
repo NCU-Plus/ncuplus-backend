@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryBuilder, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class ncuplus1656603556500 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {

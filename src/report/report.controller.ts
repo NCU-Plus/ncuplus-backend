@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   ParseIntPipe,
@@ -17,13 +16,7 @@ import { CreateReportDto } from './dtos/create-report.dto';
 import { UpdateReportDto } from './dtos/update-report.dto';
 import { Request } from 'express';
 import { User } from '../user/user.entity';
-import {
-  AccessGuard,
-  AccessService,
-  Actions,
-  AuthorizableUser,
-  UseAbility,
-} from 'nest-casl';
+import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { Report } from './report.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ReportHook } from './hooks/report.hook';
