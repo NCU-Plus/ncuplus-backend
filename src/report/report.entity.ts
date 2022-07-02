@@ -35,7 +35,7 @@ export class Report {
   @Column()
   targetId: number;
 
-  @Column()
+  @Column('boolean')
   resolved = false;
 
   @Column()
