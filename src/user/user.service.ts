@@ -45,7 +45,7 @@ export class UserService {
       }),
     );
     user.profile = await this.profileService.createProfile(
-      { name: studentId },
+      { name: '匿名使用者' },
       user.id,
     );
     return user;
