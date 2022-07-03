@@ -14,12 +14,19 @@ import {
   Put,
   Delete,
   ParseEnumPipe,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Comment, Review } from './content.entity';
 import { CourseFeedbackService } from './course-feedback.service';
+import { CreateCommentDto } from './dtos/create-comment.dto';
+import { CreatePastExamDto } from './dtos/create-past-exam.dto';
+import { CreateReactionDto } from './dtos/create-reaction.dto';
+import { CreateReviewDto } from './dtos/create-review.dto';
+import { UpdateCommentDto } from './dtos/update-comment.dto';
+import { UpdateReviewDto } from './dtos/update-review.dto';
 import { CommentHook } from './hooks/comment.hook';
 import { PastExamHook } from './hooks/past-exam.hook';
 import { ReviewHook } from './hooks/review.hook';
@@ -45,7 +52,8 @@ export class CourseFeedbackController {
   async createComment(
     @Request() req,
     @Param('classNo') classNo: string,
-    @Body('content') content: string,
+    @Body(new ValidationPipe({ transform: true }))
+    createCommentDto: CreateCommentDto,
   ) {
     return {
       statusCode: 200,
@@ -53,7 +61,7 @@ export class CourseFeedbackController {
       data: await this.courseInfoService.createComment(
         classNo,
         req.user.id,
-        content,
+        createCommentDto,
       ),
     };
   }
@@ -63,12 +71,13 @@ export class CourseFeedbackController {
   @UseAbility(Actions.update, Comment, CommentHook)
   async updateComment(
     @Param('id', ParseIntPipe) id: number,
-    @Body('content') content: string,
+    @Body(new ValidationPipe({ transform: true }))
+    updateCommentDto: UpdateCommentDto,
   ) {
     return {
       statusCode: 200,
       message: 'OK',
-      data: await this.courseInfoService.editComment(id, content),
+      data: await this.courseInfoService.editComment(id, updateCommentDto),
     };
   }
 
@@ -89,12 +98,17 @@ export class CourseFeedbackController {
   async reactToComment(
     @Request() req,
     @Param('id', ParseIntPipe) id: number,
-    @Body('type', new ParseEnumPipe(ReactionType)) type: ReactionType,
+    @Body(new ValidationPipe({ transform: true }))
+    createReactionDto: CreateReactionDto,
   ) {
     return {
       statusCode: 200,
       message: 'OK',
-      data: await this.courseInfoService.reactToComment(id, req.user.id, type),
+      data: await this.courseInfoService.reactToComment(
+        id,
+        req.user.id,
+        createReactionDto,
+      ),
     };
   }
 
@@ -104,7 +118,8 @@ export class CourseFeedbackController {
   async createReview(
     @Request() req,
     @Param('classNo') classNo: string,
-    @Body('content') content: string,
+    @Body(new ValidationPipe({ transform: true }))
+    createReviewDto: CreateReviewDto,
   ) {
     return {
       statusCode: 200,
@@ -112,7 +127,7 @@ export class CourseFeedbackController {
       data: await this.courseInfoService.createReview(
         classNo,
         req.user.id,
-        content,
+        createReviewDto,
       ),
     };
   }
@@ -122,12 +137,13 @@ export class CourseFeedbackController {
   @UseAbility(Actions.update, Review, ReviewHook)
   async updateReview(
     @Param('id', ParseIntPipe) id: number,
-    @Body('content') content: string,
+    @Body(new ValidationPipe({ transform: true }))
+    updateReviewDto: UpdateReviewDto,
   ) {
     return {
       statusCode: 200,
       message: 'OK',
-      data: await this.courseInfoService.editReview(id, content),
+      data: await this.courseInfoService.editReview(id, updateReviewDto),
     };
   }
 
@@ -148,12 +164,17 @@ export class CourseFeedbackController {
   async reactToReview(
     @Request() req,
     @Param('id', ParseIntPipe) id: number,
-    @Body('type', new ParseEnumPipe(ReactionType)) type: ReactionType,
+    @Body(new ValidationPipe({ transform: true }))
+    createReactionDto: CreateReactionDto,
   ) {
     return {
       statusCode: 200,
       message: 'OK',
-      data: await this.courseInfoService.reactToReview(id, req.user.id, type),
+      data: await this.courseInfoService.reactToReview(
+        id,
+        req.user.id,
+        createReactionDto,
+      ),
     };
   }
 
@@ -187,8 +208,8 @@ export class CourseFeedbackController {
   async uploadFile(
     @Request() req,
     @Param('classNo') classNo: string,
-    @Body('year') year: string,
-    @Body('description') description: string,
+    @Body(new ValidationPipe({ transform: true }))
+    createPastExamDto: CreatePastExamDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) throw new BadRequestException('File is not accepted');
@@ -198,8 +219,7 @@ export class CourseFeedbackController {
       data: await this.courseInfoService.uploadPastExam(
         classNo,
         req.user.id,
-        year,
-        description,
+        createPastExamDto,
         file,
       ),
     };

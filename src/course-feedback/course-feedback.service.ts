@@ -13,6 +13,12 @@ import { PastExam } from './past-exam.entity';
 import { createReadStream } from 'fs';
 import { CourseFeedback } from './course-feedback.entity';
 import { Reaction, ReactionType } from './reaction.entity';
+import { CreateCommentDto } from './dtos/create-comment.dto';
+import { UpdateCommentDto } from './dtos/update-comment.dto';
+import { CreateReactionDto } from './dtos/create-reaction.dto';
+import { CreateReviewDto } from './dtos/create-review.dto';
+import { UpdateReviewDto } from './dtos/update-review.dto';
+import { CreatePastExamDto } from './dtos/create-past-exam.dto';
 
 @Injectable()
 export class CourseFeedbackService {
@@ -51,26 +57,26 @@ export class CourseFeedbackService {
     return courseFeedback;
   }
 
-  async createComment(classNo: string, authorId: number, content: string) {
-    if (content.length === 0)
-      throw new BadRequestException('Comment cannot be empty');
+  async createComment(
+    classNo: string,
+    authorId: number,
+    createCommentDto: CreateCommentDto,
+  ) {
     const courseFeedback = await this.getCourseFeedback(classNo);
     if (!courseFeedback)
       throw new NotFoundException(`Course with classNo ${classNo} not found`);
     const comment = this.commentRepository.create({
       authorId: authorId,
-      content: content,
+      content: createCommentDto.content,
       courseFeedback: courseFeedback,
       reactions: [],
     });
     return await this.commentRepository.save(comment);
   }
 
-  async editComment(commentId: number, content: string) {
-    if (content.length === 0)
-      throw new BadRequestException('Comment cannot be empty');
+  async editComment(commentId: number, updateCommentDto: UpdateCommentDto) {
     const comment = await this.findOneComment(commentId);
-    comment.content = content;
+    if (updateCommentDto.content) comment.content = updateCommentDto.content;
     return await this.commentRepository.save(comment);
   }
 
@@ -88,10 +94,16 @@ export class CourseFeedbackService {
   async reactToComment(
     commentId: number,
     authorId: number,
-    type: ReactionType,
+    createReactionDto: CreateReactionDto,
   ) {
-    return await this.reactToContent('comment', commentId, authorId, type);
+    return await this.reactToContent(
+      'comment',
+      commentId,
+      authorId,
+      createReactionDto.type,
+    );
   }
+
   private async reactToContent(
     target: 'comment' | 'review',
     id: number,
@@ -119,27 +131,26 @@ export class CourseFeedbackService {
   async createReview(
     classNo: string,
     authorId: number,
-    content: string,
+    createReviewDto: CreateReviewDto,
   ): Promise<Review> {
-    if (content.length === 0)
-      throw new BadRequestException('Review cannot be empty');
     const courseFeedback = await this.getCourseFeedback(classNo);
     if (!courseFeedback)
       throw new NotFoundException(`Course with classNo ${classNo} not found`);
     const review = this.reviewRepository.create({
       authorId: authorId,
-      content: content,
+      content: createReviewDto.content,
       courseFeedback: courseFeedback,
       reactions: [],
     });
     return await this.reviewRepository.save(review);
   }
 
-  async editReview(commentId: number, content: string): Promise<Review> {
-    if (content.length === 0)
-      throw new BadRequestException('Review cannot be empty');
+  async editReview(
+    commentId: number,
+    updateReviewDto: UpdateReviewDto,
+  ): Promise<Review> {
     const review = await this.findOneReview(commentId);
-    review.content = content;
+    if (updateReviewDto.content) review.content = updateReviewDto.content;
     return await this.reviewRepository.save(review);
   }
 
@@ -154,8 +165,17 @@ export class CourseFeedbackService {
     await this.reviewRepository.delete(reviewId);
   }
 
-  async reactToReview(reviewId: number, authorId: number, type: ReactionType) {
-    return await this.reactToContent('review', reviewId, authorId, type);
+  async reactToReview(
+    reviewId: number,
+    authorId: number,
+    createReactionDto: CreateReactionDto,
+  ) {
+    return await this.reactToContent(
+      'review',
+      reviewId,
+      authorId,
+      createReactionDto.type,
+    );
   }
 
   async dislikeReview(reviewId: number, userId: number): Promise<Reaction> {
@@ -192,15 +212,14 @@ export class CourseFeedbackService {
   async uploadPastExam(
     classNo: string,
     uploaderId: number,
-    year: string,
-    description: string,
+    createPastExamDto: CreatePastExamDto,
     file: Express.Multer.File,
   ) {
     return await this.pastExamRepository.save(
       this.pastExamRepository.create({
         uploaderId: uploaderId,
-        year: year,
-        description: description,
+        year: createPastExamDto.year,
+        description: createPastExamDto.description,
         originFilename: file.originalname,
         path: file.path,
         size: file.size,
