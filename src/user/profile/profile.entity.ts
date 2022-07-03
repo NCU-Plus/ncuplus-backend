@@ -14,7 +14,7 @@ export class Profile {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('varchar', { length: 16 })
   name: string;
 
   @OneToOne(() => User, (user) => user.profile, { onDelete: 'CASCADE' })
