@@ -175,6 +175,8 @@ export class CourseFeedbackController {
           'image/png',
           'image/jpg',
           'application/zip',
+          'application/zip-compressed',
+          'application/x-zip-compressed',
           'application/x-7z-compressed',
           'application/x-rar-compressed',
         ];
