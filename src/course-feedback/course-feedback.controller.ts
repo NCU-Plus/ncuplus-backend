@@ -46,6 +46,15 @@ export class CourseFeedbackController {
     };
   }
 
+  @Get('comments')
+  async getAllComments() {
+    return {
+      statusCode: 200,
+      message: 'OK',
+      data: await this.courseInfoService.findAllComment(),
+    };
+  }
+
   @UseGuards(JwtAuthGuard, AccessGuard)
   @Post('course-feedbacks/:classNo/comments')
   @UseAbility(Actions.create, Comment)
@@ -109,6 +118,15 @@ export class CourseFeedbackController {
         req.user.id,
         createReactionDto,
       ),
+    };
+  }
+
+  @Get('reviews')
+  async getAllReviews() {
+    return {
+      statusCode: 200,
+      message: 'OK',
+      data: await this.courseInfoService.findAllReview(),
     };
   }
 

@@ -57,6 +57,10 @@ export class CourseFeedbackService {
     return courseFeedback;
   }
 
+  async findAllComment() {
+    return await this.commentRepository.find();
+  }
+
   async createComment(
     classNo: string,
     authorId: number,
@@ -126,6 +130,10 @@ export class CourseFeedbackService {
         type,
       }),
     );
+  }
+
+  async findAllReview() {
+    return await this.reviewRepository.find();
   }
 
   async createReview(

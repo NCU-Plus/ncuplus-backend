@@ -17,6 +17,9 @@ abstract class Content {
   @Column()
   authorId: number;
 
+  @Column({ nullable: true })
+  courseFeedbackClassNo: string;
+
   @ManyToOne(
     () => CourseFeedback,
     (courseFeedback) => courseFeedback.comments,
