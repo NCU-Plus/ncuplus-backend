@@ -14,10 +14,13 @@ import {
   Put,
   Delete,
   ValidationPipe,
+  ParseFilePipe,
+  MaxFileSizeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { FileMimetypeValidator } from 'src/pipes/file-mimetype.validator';
 import { Comment, Review } from './content.entity';
 import { CourseFeedbackService } from './course-feedback.service';
 import { CreateCommentDto } from './dtos/create-comment.dto';
@@ -202,26 +205,6 @@ export class CourseFeedbackController {
   @UseInterceptors(
     FileInterceptor('file', {
       dest: 'uploads/past-exam/',
-      async fileFilter(req, file, cb) {
-        const acceptedMimetypes = [
-          'application/pdf',
-          'application/msword',
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'application/vnd.ms-powerpoint',
-          'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-          'image/jpeg',
-          'image/png',
-          'image/jpg',
-          'application/zip',
-          'application/zip-compressed',
-          'application/x-zip-compressed',
-          'application/x-7z-compressed',
-          'application/x-rar-compressed',
-        ];
-        if (acceptedMimetypes.includes(file.mimetype)) cb(null, true);
-        else cb(null, false);
-      },
-      limits: { fileSize: 15728640 }, // 15MB
     }),
   )
   async uploadFile(
@@ -229,7 +212,29 @@ export class CourseFeedbackController {
     @Param('classNo') classNo: string,
     @Body(new ValidationPipe({ transform: true }))
     createPastExamDto: CreatePastExamDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 15728640 }), // 15MB
+          new FileMimetypeValidator({
+            acceptedMimetypes: [
+              'application/pdf',
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+              'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+              'image/jpeg',
+              'image/png',
+              'image/jpg',
+              'application/zip',
+              'application/zip-compressed',
+              'application/x-zip-compressed',
+              'application/x-7z-compressed',
+              'application/x-rar-compressed',
+            ],
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
   ) {
     if (!file) throw new BadRequestException('File is not accepted');
     return {
