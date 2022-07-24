@@ -1,4 +1,4 @@
-import { IsEnum, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsEnum } from 'class-validator';
 import { ReactionType } from '../reaction.entity';
 
 export class CreateReactionDto {
