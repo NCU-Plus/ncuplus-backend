@@ -21,7 +21,8 @@ export class UserService {
     return user;
   }
   async getUser(id: number): Promise<User> {
-    return await this.userRepository.findOne(id, {
+    return await this.userRepository.findOne({
+      where: { id },
       select: ['id', 'roles'],
     });
   }

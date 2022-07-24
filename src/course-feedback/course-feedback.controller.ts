@@ -13,7 +13,6 @@ import {
   BadRequestException,
   Put,
   Delete,
-  ParseEnumPipe,
   ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -31,7 +30,7 @@ import { CommentHook } from './hooks/comment.hook';
 import { PastExamHook } from './hooks/past-exam.hook';
 import { ReviewHook } from './hooks/review.hook';
 import { PastExam } from './past-exam.entity';
-import { Reaction, ReactionType } from './reaction.entity';
+import { Reaction } from './reaction.entity';
 
 @Controller()
 export class CourseFeedbackController {
@@ -203,7 +202,7 @@ export class CourseFeedbackController {
   @UseInterceptors(
     FileInterceptor('file', {
       dest: 'uploads/past-exam/',
-      fileFilter(req, file, cb) {
+      async fileFilter(req, file, cb) {
         const acceptedMimetypes = [
           'application/pdf',
           'application/msword',

@@ -37,7 +37,8 @@ export class CourseFeedbackService {
   ) {}
 
   async getCourseFeedback(classNo: string): Promise<CourseFeedback> {
-    let courseFeedback = await this.courseFeedbackRepository.findOne(classNo, {
+    let courseFeedback = await this.courseFeedbackRepository.findOne({
+      where: { classNo },
       select: ['classNo', 'comments', 'reviews', 'pastExams'],
     });
     if (!courseFeedback) {
@@ -85,7 +86,9 @@ export class CourseFeedbackService {
   }
 
   async findOneComment(commentId: number) {
-    const comment = await this.commentRepository.findOne(commentId);
+    const comment = await this.commentRepository.findOne({
+      where: { id: commentId },
+    });
     if (!comment)
       throw new NotFoundException(`Comment with ID ${commentId} not found`);
     return comment;
@@ -116,8 +119,8 @@ export class CourseFeedbackService {
   ) {
     const content =
       target === 'comment'
-        ? await this.commentRepository.findOne(id)
-        : await this.reviewRepository.findOne(id);
+        ? await this.commentRepository.findOne({ where: { id } })
+        : await this.reviewRepository.findOne({ where: { id } });
     if (!content)
       throw new NotFoundException(`${target} with ID ${id} not found`);
 
@@ -163,7 +166,9 @@ export class CourseFeedbackService {
   }
 
   async findOneReview(commentId: number) {
-    const review = await this.reviewRepository.findOne(commentId);
+    const review = await this.reviewRepository.findOne({
+      where: { id: commentId },
+    });
     if (!review)
       throw new NotFoundException(`Review with ID ${commentId} not found`);
     return review;
@@ -238,7 +243,7 @@ export class CourseFeedbackService {
   }
 
   async findOnePastExam(id: number) {
-    const pastExam = await this.pastExamRepository.findOne(id);
+    const pastExam = await this.pastExamRepository.findOne({ where: { id } });
     if (!pastExam)
       throw new NotFoundException(`PastExam with ID ${id} not found`);
     return pastExam;

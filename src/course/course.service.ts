@@ -31,7 +31,8 @@ export class CourseService {
     });
   }
   async getCourse(id: number): Promise<Course> {
-    const course = await this.courseRepository.findOne(id, {
+    const course = await this.courseRepository.findOne({
+      where: { id },
       select: [
         'id',
         'year',
