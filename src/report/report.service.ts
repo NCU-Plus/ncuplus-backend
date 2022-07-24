@@ -36,7 +36,7 @@ export class ReportService {
   }
 
   async findOne(id: number) {
-    const report = await this.reportRepository.findOne(id);
+    const report = await this.reportRepository.findOne({ where: { id } });
     if (!report) throw new NotFoundException('Report not found');
     return report;
   }

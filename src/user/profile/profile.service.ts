@@ -13,7 +13,8 @@ export class ProfileService {
   ) {}
 
   async findById(id: number): Promise<Profile> {
-    const profile = await this.profileRepository.findOne(id, {
+    const profile = await this.profileRepository.findOne({
+      where: { id },
       loadRelationIds: true,
     });
     if (!profile) throw new NotFoundException('Profile not found');
