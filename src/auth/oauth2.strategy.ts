@@ -47,7 +47,10 @@ export class OAuth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
     let user = await this.userService.getUserByPortalId(profile.id);
     if (!user) {
       if (!(profile.id && profile.identifier && profile.studentId))
-        throw new BadRequestException('Missing required fields');
+        throw new BadRequestException(
+          'Missing required fields (need id, identifier and studentId), get: ' +
+            JSON.stringify(profile),
+        );
       user = await this.userService.createUser(
         profile.id,
         profile.identifier,
