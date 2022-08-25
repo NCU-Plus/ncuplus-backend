@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { User } from 'src/user/user.entity';
-import { promisify } from 'util';
 import { AuthService } from './auth.service';
 import { CsrfGuard } from './csrf.guard';
 import { LoginGuard } from './login.guard';
