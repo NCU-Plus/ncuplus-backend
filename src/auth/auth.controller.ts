@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { User } from 'src/user/user.entity';
+import { promisify } from 'util';
 import { AuthService } from './auth.service';
 import { CsrfGuard } from './csrf.guard';
 import { LoginGuard } from './login.guard';
@@ -42,7 +43,12 @@ export class AuthController {
   @Post('logout')
   @HttpCode(200)
   async logout(@Req() req: Request) {
-    req.logout();
+    await new Promise<void>((resolve, reject) => {
+      req.logout((err) => {
+        if (err) reject(err);
+        resolve();
+      });
+    });
     return {
       statusCode: 200,
       message: 'OK',
