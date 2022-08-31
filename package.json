@@ -41,7 +41,7 @@
     "file-type": "^16.5.4",
     "helmet": "^5.0.2",
     "mysql2": "^2.3.3",
-    "nest-casl": "^1.6.9",
+    "nest-casl": "^1.6.12",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "passport-oauth2": "^1.6.1",
