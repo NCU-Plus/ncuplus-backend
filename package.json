@@ -67,7 +67,7 @@
     "@types/passport-jwt": "^3.0.6",
     "@types/passport-oauth2": "^1.4.11",
     "@types/supertest": "^2.0.11",
-    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/eslint-plugin": "^5.37.0",
     "@typescript-eslint/parser": "^5.30.7",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
